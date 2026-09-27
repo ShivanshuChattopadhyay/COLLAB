@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>COLLAB — Batch Processing</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: #111;
+    color: #d7d7d7;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+    height: 58px;
+    background: #171717;
+    border-bottom: 1px solid #303030;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+    gap: 20px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-mark {
+    width: 30px;
+    height: 30px;
+
+    border: 2px solid #ddd;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #eee;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.brand-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #eee;
+}
+
+.brand-sub {
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.page-title {
+    border-left: 1px solid #333;
+    padding-left: 20px;
+
+    color: #777;
+
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.top-actions {
+    margin-left: auto;
+
+    display: flex;
+    gap: 6px;
+}
+
+.top-link {
+    height: 31px;
+
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #202020;
+    border: 1px solid #383838;
+
+    color: #999;
+    text-decoration: none;
+
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.top-link:hover {
+    background: #292929;
+    color: #eee;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page {
+    max-width: 1450px;
+    margin: auto;
+
+    padding: 18px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    margin-bottom: 14px;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 650;
+
+    text-transform: uppercase;
+    letter-spacing: .8px;
+
+    color: #ddd;
+}
+
+.subtitle {
+    font-size: 9px;
+    color: #666;
+
+    margin-top: 5px;
+}
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+.panel {
+    background: #171717;
+    border: 1px solid #303030;
+
+    margin-bottom: 12px;
+}
+
+.panel-head {
+    padding: 11px 13px;
+
+    border-bottom: 1px solid #2c2c2c;
+
+    color: #888;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+}
+
+.panel-body {
+    padding: 13px;
+}
+
+/* =========================================================
+   DROP ZONE
+   ========================================================= */
+
+.dropzone {
+    border: 1px dashed #505050;
+    background: #111;
+
+    min-height: 175px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: .15s;
+}
+
+.dropzone:hover,
+.dropzone.dragover {
+    border-color: #aaa;
+    background: #181818;
+}
+
+.drop-title {
+    font-size: 13px;
+    color: #bbb;
+
+    margin-bottom: 7px;
+}
+
+.drop-text {
+    font-size: 9px;
+    color: #666;
+
+    line-height: 1.6;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-count {
+    margin-top: 10px;
+
+    color: #777;
+
+    font-family: Consolas, monospace;
+
+    font-size: 9px;
+}
+
+/* =========================================================
+   FILE LIST
+   ========================================================= */
+
+.file-list {
+    margin-top: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(190px, 1fr));
+
+    gap: 5px;
+}
+
+.file-item {
+    padding: 7px 8px;
+
+    background: #202020;
+
+    border: 1px solid #303030;
+
+    color: #888;
+
+    font-size: 8px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.controls {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(150px, 1fr));
+
+    gap: 9px;
+}
+
+.field label {
+    display: block;
+
+    color: #666;
+
+    font-size: 8px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+    margin-bottom: 5px;
+}
+
+.field select,
+.field input {
+    width: 100%;
+    height: 33px;
+
+    background: #101010;
+
+    border: 1px solid #383838;
+
+    color: #aaa;
+
+    padding: 0 8px;
+
+    outline: none;
+
+    font-size: 9px;
+}
+
+.field select:focus,
+.field input:focus {
+    border-color: #777;
+    color: #eee;
+}
+
+/* =========================================================
+   PARAMETERS
+   ========================================================= */
+
+.section-label {
+    color: #777;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    margin: 17px 0 8px;
+}
+
+.param-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(130px, 1fr));
+
+    gap: 9px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+
+    margin-top: 14px;
+
+    padding-top: 13px;
+
+    border-top: 1px solid #2c2c2c;
+}
+
+.button {
+    height: 36px;
+
+    padding: 0 17px;
+
+    background: #202020;
+
+    border: 1px solid #383838;
+
+    color: #999;
+
+    font-size: 9px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+    cursor: pointer;
+}
+
+.button:hover {
+    background: #292929;
+    color: #eee;
+}
+
+.button.primary {
+    background: #ddd;
+
+    border-color: #ddd;
+
+    color: #111;
+
+    font-weight: 700;
+}
+
+.button.primary:hover {
+    background: #fff;
+}
+
+/* =========================================================
+   WORKFLOW
+   ========================================================= */
+
+.info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 7px;
+}
+
+.info {
+    background: #202020;
+
+    border: 1px solid #303030;
+
+    padding: 10px;
+}
+
+.info-value {
+    font-size: 16px;
+
+    color: #ddd;
+
+    font-family: Consolas, monospace;
+}
+
+.info-label {
+    font-size: 8px;
+
+    color: #666;
+
+    text-transform: uppercase;
+
+    letter-spacing: .6px;
+
+    margin-top: 4px;
+}
+
+.note {
+    color: #555;
+
+    font-size: 8px;
+
+    line-height: 1.6;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    .controls,
+    .param-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 8px;
+    }
+}
+
+@media (max-width: 520px) {
+
+    .controls,
+    .param-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page {
+        padding: 10px;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     TOP BAR
+     ======================================================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            C
+        </div>
+
+        <div>
+
+            <div class="brand-name">
+                COLLAB
+            </div>
+
+            <div class="brand-sub">
+                IMAGING &amp; VISION WORKBENCH
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="page-title">
+        Batch Processing
+    </div>
+
+
+    <div class="top-actions">
+
+        <a
+            href="/"
+            class="top-link"
+        >
+            Home
+        </a>
+
+        <a
+            href="/new"
+            class="top-link"
+        >
+            New Image
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<!-- =======================================================
+     MAIN PAGE
+     ======================================================= -->
+
+<main class="page">
+
+
+    <div class="header">
+
+        <div>
+
+            <div class="title">
+                Batch Processing
+            </div>
+
+            <div class="subtitle">
+                Apply one image-processing operation to multiple
+                images in a single run.
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===================================================
+         FLASH MESSAGES
+         =================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div class="panel">
+
+                    <div
+                        class="panel-body"
+                        style="color:#d09090;font-size:10px;"
+                    >
+
+                        {{ message }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+
+    <!-- ===================================================
+         BATCH FORM
+         =================================================== -->
+
+    <form
+        id="batchForm"
+        method="POST"
+        action="/batch/process"
+        enctype="multipart/form-data"
+    >
+
+
+        <!-- =================================================
+             INPUT IMAGES
+             ================================================= -->
+
+        <section class="panel">
+
+            <div class="panel-head">
+                1 — Input Images
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <label
+                    class="dropzone"
+                    id="dropzone"
+                    for="images"
+                >
+
+                    <div class="drop-title">
+                        Select multiple images
+                    </div>
+
+                    <div class="drop-text">
+
+                        JPG, JPEG, PNG, BMP, TIFF or WEBP
+
+                        <br>
+
+                        You can select 1, 10, 50, 100 or more images.
+
+                    </div>
+
+
+                    <div
+                        class="file-count"
+                        id="fileCount"
+                    >
+                        0 images selected
+                    </div>
+
+                </label>
+
+
+                <input
+                    id="images"
+                    class="file-input"
+                    type="file"
+                    name="images"
+
+                    accept="
+                        .jpg,
+                        .jpeg,
+                        .png,
+                        .bmp,
+                        .tif,
+                        .tiff,
+                        .webp,
+                        image/*
+                    "
+
+                    multiple
+                    required
+                >
+
+
+                <div
+                    class="file-list"
+                    id="fileList"
+                ></div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PROCESSING CONFIGURATION
+             ================================================= -->
+
+        <section class="panel">
+
+
+            <div class="panel-head">
+                2 — Processing Configuration
+            </div>
+
+
+            <div class="panel-body">
+
+
+                <div class="controls">
+
+
+                    <!-- OPERATION -->
+
+                    <div class="field">
+
+                        <label for="operation">
+                            Operation
+                        </label>
+
+
+                        <select
+                            id="operation"
+                            name="operation"
+                        >
+
+
+                            <optgroup label="Basic">
+
+                                <option value="original">
+                                    Original / Copy
+                                </option>
+
+                                <option value="grayscale">
+                                    Grayscale
+                                </option>
+
+                                <option value="black_white">
+                                    Black &amp; White
+                                </option>
+
+                                <option value="negative">
+                                    Negative
+                                </option>
+
+                                <option value="sepia">
+                                    Sepia
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Enhancement">
+
+                                <option value="log">
+                                    Log Transform
+                                </option>
+
+                                <option value="gamma">
+                                    Gamma Transform
+                                </option>
+
+                                <option value="histogram_equalization">
+                                    Histogram Equalization
+                                </option>
+
+                                <option value="contrast_stretch">
+                                    Contrast Stretch
+                                </option>
+
+                                <option value="clahe">
+                                    CLAHE
+                                </option>
+
+                                <option value="auto_enhancement">
+                                    Automatic Enhancement
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Spatial Filtering">
+
+                                <option value="mean">
+                                    Mean Filter
+                                </option>
+
+                                <option value="gaussian">
+                                    Gaussian Filter
+                                </option>
+
+                                <option value="median">
+                                    Median Filter
+                                </option>
+
+                                <option value="bilateral">
+                                    Bilateral Filter
+                                </option>
+
+                                <option value="sharpen">
+                                    Sharpen
+                                </option>
+
+                                <option value="unsharp">
+                                    Unsharp Masking
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Edges">
+
+                                <option value="sobel">
+                                    Sobel
+                                </option>
+
+                                <option value="sobel_x">
+                                    Sobel X
+                                </option>
+
+                                <option value="sobel_y">
+                                    Sobel Y
+                                </option>
+
+                                <option value="laplacian">
+                                    Laplacian
+                                </option>
+
+                                <option value="canny">
+                                    Canny
+                                </option>
+
+                                <option value="scharr_x">
+                                    Scharr X
+                                </option>
+
+                                <option value="scharr_y">
+                                    Scharr Y
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Thresholding">
+
+                                <option value="threshold">
+                                    Binary Threshold
+                                </option>
+
+                                <option value="otsu">
+                                    Otsu
+                                </option>
+
+                                <option value="adaptive_threshold">
+                                    Adaptive Threshold
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Morphology">
+
+                                <option value="erosion">
+                                    Erosion
+                                </option>
+
+                                <option value="dilation">
+                                    Dilation
+                                </option>
+
+                                <option value="opening">
+                                    Opening
+                                </option>
+
+                                <option value="closing">
+                                    Closing
+                                </option>
+
+                                <option value="morphological_gradient">
+                                    Morphological Gradient
+                                </option>
+
+                                <option value="top_hat">
+                                    Top Hat
+                                </option>
+
+                                <option value="black_hat">
+                                    Black Hat
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Frequency">
+
+                                <option value="fft">
+                                    FFT Spectrum
+                                </option>
+
+                                <option value="inverse_fft">
+                                    Inverse FFT
+                                </option>
+
+                                <option value="low_pass">
+                                    Low-Pass Filter
+                                </option>
+
+                                <option value="high_pass">
+                                    High-Pass Filter
+                                </option>
+
+                            </optgroup>
+
+
+
+                            <optgroup label="Geometry">
+
+                                <option value="rotate_90">
+                                    Rotate 90°
+                                </option>
+
+                                <option value="rotate_180">
+                                    Rotate 180°
+                                </option>
+
+                                <option value="rotate_270">
+                                    Rotate 270°
+                                </option>
+
+                                <option value="flip_horizontal">
+                                    Flip Horizontal
+                                </option>
+
+                                <option value="flip_vertical">
+                                    Flip Vertical
+                                </option>
+
+                                <option value="resize">
+                                    Resize
+                                </option>
+
+                            </optgroup>
+
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- OUTPUT -->
+
+                    <div class="field">
+
+                        <label for="output_format">
+                            Output Format
+                        </label>
+
+                        <select
+                            id="output_format"
+                            name="output_format"
+                        >
+
+                            <option value="png">
+                                PNG
+                            </option>
+
+                            <option value="jpg">
+                                JPG
+                            </option>
+
+                            <option value="jpeg">
+                                JPEG
+                            </option>
+
+                            <option value="webp">
+                                WEBP
+                            </option>
+
+                            <option value="bmp">
+                                BMP
+                            </option>
+
+                            <option value="tif">
+                                TIFF
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- KERNEL -->
+
+                    <div class="field">
+
+                        <label for="kernel_size">
+                            Kernel Size
+                        </label>
+
+                        <input
+                            id="kernel_size"
+                            type="number"
+                            name="kernel_size"
+
+                            value="3"
+
+                            min="1"
+                            max="31"
+                            step="2"
+                        >
+
+                    </div>
+
+
+
+                    <!-- GAMMA -->
+
+                    <div class="field">
+
+                        <label for="gamma">
+                            Gamma
+                        </label>
+
+                        <input
+                            id="gamma"
+                            type="number"
+                            name="gamma"
+
+                            value="1.0"
+
+                            min="0.1"
+                            max="10"
+                            step="0.1"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- PARAMETERS -->
+
+                <div class="section-label">
+                    Operation Parameters
+                </div>
+
+
+                <div class="param-grid">
+
+
+                    <div class="field">
+
+                        <label for="threshold">
+                            Threshold
+                        </label>
+
+                        <input
+                            id="threshold"
+                            type="number"
+                            name="threshold"
+
+                            value="127"
+
+                            min="0"
+                            max="255"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="lower_threshold">
+                            Canny Lower
+                        </label>
+
+                        <input
+                            id="lower_threshold"
+                            type="number"
+                            name="lower_threshold"
+
+                            value="50"
+
+                            min="0"
+                            max="255"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="upper_threshold">
+                            Canny Upper
+                        </label>
+
+                        <input
+                            id="upper_threshold"
+                            type="number"
+                            name="upper_threshold"
+
+                            value="150"
+
+                            min="0"
+                            max="255"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="cutoff_frequency">
+                            Frequency Cutoff
+                        </label>
+
+                        <input
+                            id="cutoff_frequency"
+                            type="number"
+                            name="cutoff_frequency"
+
+                            value="30"
+
+                            min="1"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="block_size">
+                            Adaptive Block Size
+                        </label>
+
+                        <input
+                            id="block_size"
+                            type="number"
+                            name="block_size"
+
+                            value="11"
+
+                            min="3"
+                            max="101"
+                            step="2"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="c">
+                            Adaptive C
+                        </label>
+
+                        <input
+                            id="c"
+                            type="number"
+                            name="c"
+
+                            value="2"
+
+                            min="-50"
+                            max="50"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="width">
+                            Resize Width
+                        </label>
+
+                        <input
+                            id="width"
+                            type="number"
+                            name="width"
+
+                            placeholder="Optional"
+
+                            min="1"
+                        >
+
+                    </div>
+
+
+
+                    <div class="field">
+
+                        <label for="height">
+                            Resize Height
+                        </label>
+
+                        <input
+                            id="height"
+                            type="number"
+                            name="height"
+
+                            placeholder="Optional"
+
+                            min="1"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ACTIONS -->
+
+                <div class="actions">
+
+                    <button
+                        type="reset"
+                        class="button"
+                    >
+                        Clear
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="button primary"
+                    >
+                        Process Batch
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </form>
+
+
+
+    <!-- ===================================================
+         WORKFLOW
+         =================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-head">
+            Batch Workflow
+        </div>
+
+
+        <div class="panel-body">
+
+
+            <div class="info-grid">
+
+
+                <div class="info">
+
+                    <div class="info-value">
+                        01
+                    </div>
+
+                    <div class="info-label">
+                        Select Images
+                    </div>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <div class="info-value">
+                        02
+                    </div>
+
+                    <div class="info-label">
+                        Choose Operation
+                    </div>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <div class="info-value">
+                        03
+                    </div>
+
+                    <div class="info-label">
+                        Export ZIP
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <div class="note">
+
+        Batch processing uses the same COLLAB operation dispatcher
+        as the single-image workspace wherever possible.
+
+        Each image is processed independently; a failure on one
+        image does not stop the remaining images.
+
+    </div>
+
+
+</main>
+
+
+
+<script>
+
+(function () {
+
+
+    const input =
+        document.getElementById("images");
+
+
+    const dropzone =
+        document.getElementById("dropzone");
+
+
+    const fileCount =
+        document.getElementById("fileCount");
+
+
+    const fileList =
+        document.getElementById("fileList");
+
+
+
+    function renderFiles(files) {
+
+
+        const list =
+            Array.from(files || []);
+
+
+        fileCount.textContent =
+            list.length +
+            (
+                list.length === 1
+                    ? " image selected"
+                    : " images selected"
+            );
+
+
+        fileList.innerHTML = "";
+
+
+
+        list
+            .slice(0, 100)
+            .forEach(function (file) {
+
+
+                const item =
+                    document.createElement("div");
+
+
+                item.className =
+                    "file-item";
+
+
+                item.textContent =
+                    file.name +
+                    "  ·  " +
+                    Math.round(
+                        file.size / 1024
+                    ) +
+                    " KB";
+
+
+                fileList.appendChild(item);
+
+
+            });
+
+
+
+        if (list.length > 100) {
+
+
+            const item =
+                document.createElement("div");
+
+
+            item.className =
+                "file-item";
+
+
+            item.textContent =
+                "+" +
+                (list.length - 100) +
+                " more files";
+
+
+            fileList.appendChild(item);
+
+        }
+
+    }
+
+
+
+    input.addEventListener(
+        "change",
+        function () {
+
+            renderFiles(
+                this.files
+            );
+
+        }
+    );
+
+
+
+    [
+        "dragenter",
+        "dragover"
+    ].forEach(
+        function (eventName) {
+
+
+            dropzone.addEventListener(
+                eventName,
+                function (event) {
+
+
+                    event.preventDefault();
+
+
+                    dropzone.classList.add(
+                        "dragover"
+                    );
+
+
+                }
+            );
+
+        }
+    );
+
+
+
+    [
+        "dragleave",
+        "drop"
+    ].forEach(
+        function (eventName) {
+
+
+            dropzone.addEventListener(
+                eventName,
+                function (event) {
+
+
+                    event.preventDefault();
+
+
+                    dropzone.classList.remove(
+                        "dragover"
+                    );
+
+
+                }
+            );
+
+        }
+    );
+
+
+
+    dropzone.addEventListener(
+        "drop",
+        function (event) {
+
+
+            if (
+                event.dataTransfer.files.length
+            ) {
+
+
+                try {
+
+
+                    input.files =
+                        event.dataTransfer.files;
+
+
+                }
+                catch (error) {
+
+
+                    // Some browsers do not permit
+                    // programmatic assignment to
+                    // input.files.
+
+
+                }
+
+
+                renderFiles(
+                    event.dataTransfer.files
+                );
+
+            }
+
+        }
+    );
+
+
+})();
+
+</script>
+
+
+</body>
+</html>

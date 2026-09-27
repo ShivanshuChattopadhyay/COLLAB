@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+offline_packages/
+static/uploads/
+static/outputs/
+static/batch/

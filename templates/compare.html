@@ -1,0 +1,3296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>COLLAB — Image Comparison</title>
+
+
+    <style>
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html,
+        body {
+            min-height: 100%;
+        }
+
+
+        body {
+            background: #111;
+            color: #d7d7d7;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            font-size: 12px;
+        }
+
+
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
+
+        /* =========================================================
+           TOP BAR
+        ========================================================= */
+
+        .topbar {
+
+            height: 58px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 18px;
+
+            background: #171717;
+
+            border-bottom: 1px solid #303030;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 1000;
+        }
+
+
+        .brand {
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .brand-mark {
+
+            width: 30px;
+            height: 30px;
+
+            border: 2px solid #ddd;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #eee;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .brand-name {
+
+            color: #eee;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            letter-spacing: 2px;
+        }
+
+
+        .brand-subtitle {
+
+            color: #666;
+
+            font-size: 8px;
+
+            letter-spacing: 1px;
+
+            margin-top: 2px;
+        }
+
+
+        .page-title {
+
+            margin-left: 22px;
+
+            padding-left: 20px;
+
+            border-left: 1px solid #333;
+
+            color: #777;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.3px;
+        }
+
+
+        .top-actions {
+
+            margin-left: auto;
+
+            display: flex;
+
+            gap: 6px;
+        }
+
+
+        .top-button {
+
+            height: 31px;
+
+            padding: 0 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #202020;
+
+            border: 1px solid #383838;
+
+            color: #999;
+
+            text-decoration: none;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+        }
+
+
+        .top-button:hover {
+
+            background: #292929;
+
+            color: #eee;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .page {
+
+            max-width: 1500px;
+
+            margin: 0 auto;
+
+            padding: 18px;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .page-header {
+
+            display: flex;
+
+            align-items: flex-end;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .heading {
+
+            color: #ddd;
+
+            font-size: 16px;
+
+            font-weight: 650;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+        }
+
+
+        .subheading {
+
+            color: #666;
+
+            font-size: 9px;
+
+            margin-top: 5px;
+        }
+
+
+        .job-id {
+
+            color: #666;
+
+            font-family: Consolas, monospace;
+
+            font-size: 9px;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+           PANEL
+        ========================================================= */
+
+        .panel {
+
+            background: #171717;
+
+            border: 1px solid #303030;
+
+            margin-bottom: 12px;
+        }
+
+
+        .panel-header {
+
+            padding: 11px 13px;
+
+            border-bottom: 1px solid #2c2c2c;
+
+            color: #888;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.1px;
+        }
+
+
+        .panel-body {
+
+            padding: 13px;
+        }
+
+
+        /* =========================================================
+           ERROR / FLASH
+        ========================================================= */
+
+        .message {
+
+            padding: 10px 12px;
+
+            margin-bottom: 12px;
+
+            background: #251818;
+
+            border: 1px solid #513333;
+
+            color: #d09090;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================================
+           ALGORITHM GRID
+        ========================================================= */
+
+        .algorithm-section {
+
+            margin-bottom: 18px;
+        }
+
+
+        .algorithm-section:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        .algorithm-section-title {
+
+            color: #777;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .algorithm-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(175px, 1fr)
+                );
+
+            gap: 5px;
+        }
+
+
+        .algorithm-option {
+
+            position: relative;
+        }
+
+
+        .algorithm-option input {
+
+            position: absolute;
+
+            opacity: 0;
+
+            pointer-events: none;
+        }
+
+
+        .algorithm-option label {
+
+            min-height: 38px;
+
+            padding: 8px 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            background: #202020;
+
+            border: 1px solid #303030;
+
+            color: #888;
+
+            cursor: pointer;
+
+            font-size: 9px;
+
+            transition:
+                background .12s,
+                border-color .12s,
+                color .12s;
+        }
+
+
+        .algorithm-option label:hover {
+
+            background: #282828;
+
+            color: #ddd;
+        }
+
+
+        .algorithm-option input:checked + label {
+
+            background: #2c2c2c;
+
+            border-color: #777;
+
+            color: #eee;
+        }
+
+
+        .algorithm-code {
+
+            margin-left: auto;
+
+            color: #555;
+
+            font-family: Consolas, monospace;
+
+            font-size: 8px;
+        }
+
+
+        .algorithm-option input:checked + label .algorithm-code {
+
+            color: #999;
+        }
+
+
+        /* =========================================================
+           RUN BAR
+        ========================================================= */
+
+        .run-bar {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 14px;
+
+            padding-top: 13px;
+
+            border-top: 1px solid #2c2c2c;
+        }
+
+
+        .selection-info {
+
+            color: #666;
+
+            font-size: 9px;
+        }
+
+
+        .run-button {
+
+            min-width: 180px;
+
+            height: 36px;
+
+            background: #ddd;
+
+            border: 1px solid #ddd;
+
+            color: #111;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+
+            cursor: pointer;
+        }
+
+
+        .run-button:hover {
+
+            background: #fff;
+        }
+
+
+        /* =========================================================
+           RESULTS GRID
+        ========================================================= */
+
+        .results-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(260px, 1fr)
+                );
+
+            gap: 10px;
+        }
+
+
+        .result-card {
+
+            background: #111;
+
+            border: 1px solid #303030;
+
+            overflow: hidden;
+        }
+
+
+        .result-title {
+
+            min-height: 36px;
+
+            padding: 9px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 8px;
+
+            border-bottom: 1px solid #292929;
+        }
+
+
+        .result-name {
+
+            color: #bbb;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+        }
+
+
+        .result-index {
+
+            color: #555;
+
+            font-family: Consolas, monospace;
+
+            font-size: 8px;
+        }
+
+
+        .result-image-wrapper {
+
+            min-height: 210px;
+
+            background: #090909;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 8px;
+        }
+
+
+        .result-image {
+
+            display: block;
+
+            max-width: 100%;
+
+            max-height: 270px;
+
+            object-fit: contain;
+        }
+
+
+        .result-footer {
+
+            padding: 8px;
+
+            border-top: 1px solid #292929;
+        }
+
+
+        .result-link {
+
+            display: block;
+
+            text-align: center;
+
+            color: #777;
+
+            text-decoration: none;
+
+            font-size: 8px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+        }
+
+
+        .result-link:hover {
+
+            color: #eee;
+        }
+
+
+        /* =========================================================
+           METRICS TABLE
+        ========================================================= */
+
+        .table-wrapper {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 850px;
+        }
+
+
+        th {
+
+            background: #202020;
+
+            color: #777;
+
+            font-size: 8px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .7px;
+
+            padding: 9px 8px;
+
+            border: 1px solid #303030;
+
+            text-align: right;
+        }
+
+
+        th:first-child {
+
+            text-align: left;
+        }
+
+
+        td {
+
+            color: #aaa;
+
+            font-family: Consolas, monospace;
+
+            font-size: 9px;
+
+            padding: 8px;
+
+            border: 1px solid #292929;
+
+            text-align: right;
+        }
+
+
+        td:first-child {
+
+            color: #ccc;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            text-align: left;
+
+            font-weight: 600;
+        }
+
+
+        tr:hover td {
+
+            background: #1c1c1c;
+        }
+
+
+        /* =========================================================
+           METRIC LEGEND
+        ========================================================= */
+
+        .metric-note {
+
+            margin-top: 10px;
+
+            color: #555;
+
+            font-size: 8px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           GRAPH
+        ========================================================= */
+
+        .graph-controls {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .graph-label {
+
+            color: #666;
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+        }
+
+
+        .metric-select {
+
+            height: 31px;
+
+            min-width: 180px;
+
+            padding: 0 8px;
+
+            background: #101010;
+
+            border: 1px solid #383838;
+
+            color: #aaa;
+
+            outline: none;
+
+            font-size: 9px;
+        }
+
+
+        .metric-select:focus {
+
+            border-color: #666;
+
+            color: #eee;
+        }
+
+
+        .chart-container {
+
+            width: 100%;
+
+            height: 390px;
+
+            background: #101010;
+
+            border: 1px solid #2d2d2d;
+
+            padding: 5px;
+        }
+
+
+        #comparisonChart {
+
+            display: block;
+
+            width: 100%;
+
+            height: 100%;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+        ========================================================= */
+
+        .empty-state {
+
+            padding: 40px 20px;
+
+            text-align: center;
+
+            color: #555;
+        }
+
+
+        .empty-state-title {
+
+            color: #888;
+
+            font-size: 12px;
+
+            margin-bottom: 6px;
+        }
+
+
+        .empty-state-text {
+
+            color: #555;
+
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           FOOTER NOTE
+        ========================================================= */
+
+        .footer-note {
+
+            padding: 12px 13px;
+
+            background: #171717;
+
+            border: 1px solid #303030;
+
+            color: #555;
+
+            font-size: 8px;
+
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
+            .page {
+
+                padding: 10px;
+            }
+
+
+            .page-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .run-bar {
+
+                align-items: stretch;
+
+                flex-direction: column;
+            }
+
+
+            .run-button {
+
+                width: 100%;
+            }
+
+
+            .graph-controls {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+            }
+
+
+            .metric-select {
+
+                width: 100%;
+            }
+
+
+            .chart-container {
+
+                height: 320px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =============================================================
+     TOP BAR
+============================================================= -->
+
+<header class="topbar">
+
+
+    <div class="brand">
+
+        <div class="brand-mark">
+            C
+        </div>
+
+
+        <div>
+
+            <div class="brand-name">
+                COLLAB
+            </div>
+
+            <div class="brand-subtitle">
+                IMAGING & VISION WORKBENCH
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="page-title">
+        Image Comparison
+    </div>
+
+
+    <div class="top-actions">
+
+        <a
+            href="/workspace/{{ job_id }}"
+            class="top-button"
+        >
+            Workspace
+        </a>
+
+
+        <a
+            href="/new"
+            class="top-button"
+        >
+            New Image
+        </a>
+
+    </div>
+
+
+</header>
+
+
+<!-- =============================================================
+     PAGE
+============================================================= -->
+
+<main class="page">
+
+
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
+
+    <div class="page-header">
+
+
+        <div>
+
+            <div class="heading">
+                Algorithm Comparison
+            </div>
+
+            <div class="subheading">
+                Run multiple image-processing methods against the
+                same source image and inspect quantitative results.
+            </div>
+
+        </div>
+
+
+        <div class="job-id">
+            JOB: {{ job_id }}
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================================
+         FLASH MESSAGES
+    ========================================================== -->
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    <!-- =========================================================
+         ALGORITHM SELECTION
+    ========================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+            Select Algorithms
+        </div>
+
+
+        <div class="panel-body">
+
+
+            <form
+                id="comparisonForm"
+                method="POST"
+                action="/compare/{{ job_id }}/run"
+            >
+
+
+                <!-- =================================================
+                     ENHANCEMENT
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Enhancement
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="negative"
+                                name="algorithms"
+                                value="negative"
+                            >
+
+                            <label for="negative">
+
+                                Image Negative
+
+                                <span class="algorithm-code">
+                                    NEG
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="log"
+                                name="algorithms"
+                                value="log"
+                            >
+
+                            <label for="log">
+
+                                Log Transform
+
+                                <span class="algorithm-code">
+                                    LOG
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="gamma"
+                                name="algorithms"
+                                value="gamma"
+                            >
+
+                            <label for="gamma">
+
+                                Gamma Correction
+
+                                <span class="algorithm-code">
+                                    GAMMA
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="histogram_equalization"
+                                name="algorithms"
+                                value="histogram_equalization"
+                            >
+
+                            <label for="histogram_equalization">
+
+                                Histogram Equalization
+
+                                <span class="algorithm-code">
+                                    HE
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="clahe"
+                                name="algorithms"
+                                value="clahe"
+                            >
+
+                            <label for="clahe">
+
+                                CLAHE
+
+                                <span class="algorithm-code">
+                                    CLAHE
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="contrast_stretch"
+                                name="algorithms"
+                                value="contrast_stretch"
+                            >
+
+                            <label for="contrast_stretch">
+
+                                Contrast Stretch
+
+                                <span class="algorithm-code">
+                                    CS
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="auto_enhancement"
+                                name="algorithms"
+                                value="auto_enhancement"
+                            >
+
+                            <label for="auto_enhancement">
+
+                                Automatic Enhancement
+
+                                <span class="algorithm-code">
+                                    AUTO
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     SPATIAL FILTERING
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Spatial Filtering
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="mean"
+                                name="algorithms"
+                                value="mean"
+                            >
+
+                            <label for="mean">
+
+                                Mean Filter
+
+                                <span class="algorithm-code">
+                                    MEAN
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="gaussian"
+                                name="algorithms"
+                                value="gaussian"
+                            >
+
+                            <label for="gaussian">
+
+                                Gaussian Filter
+
+                                <span class="algorithm-code">
+                                    GAUSS
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="median"
+                                name="algorithms"
+                                value="median"
+                            >
+
+                            <label for="median">
+
+                                Median Filter
+
+                                <span class="algorithm-code">
+                                    MED
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="bilateral"
+                                name="algorithms"
+                                value="bilateral"
+                            >
+
+                            <label for="bilateral">
+
+                                Bilateral Filter
+
+                                <span class="algorithm-code">
+                                    BILAT
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="sharpen"
+                                name="algorithms"
+                                value="sharpen"
+                            >
+
+                            <label for="sharpen">
+
+                                Sharpen
+
+                                <span class="algorithm-code">
+                                    SHARP
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="unsharp"
+                                name="algorithms"
+                                value="unsharp"
+                            >
+
+                            <label for="unsharp">
+
+                                Unsharp Masking
+
+                                <span class="algorithm-code">
+                                    UNSHARP
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     EDGE DETECTION
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Edge Detection
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="sobel"
+                                name="algorithms"
+                                value="sobel"
+                            >
+
+                            <label for="sobel">
+
+                                Sobel
+
+                                <span class="algorithm-code">
+                                    SOBEL
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="sobel_x"
+                                name="algorithms"
+                                value="sobel_x"
+                            >
+
+                            <label for="sobel_x">
+
+                                Sobel X
+
+                                <span class="algorithm-code">
+                                    SX
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="sobel_y"
+                                name="algorithms"
+                                value="sobel_y"
+                            >
+
+                            <label for="sobel_y">
+
+                                Sobel Y
+
+                                <span class="algorithm-code">
+                                    SY
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="laplacian"
+                                name="algorithms"
+                                value="laplacian"
+                            >
+
+                            <label for="laplacian">
+
+                                Laplacian
+
+                                <span class="algorithm-code">
+                                    LAP
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="canny"
+                                name="algorithms"
+                                value="canny"
+                            >
+
+                            <label for="canny">
+
+                                Canny
+
+                                <span class="algorithm-code">
+                                    CANNY
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="scharr_x"
+                                name="algorithms"
+                                value="scharr_x"
+                            >
+
+                            <label for="scharr_x">
+
+                                Scharr X
+
+                                <span class="algorithm-code">
+                                    SCX
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="scharr_y"
+                                name="algorithms"
+                                value="scharr_y"
+                            >
+
+                            <label for="scharr_y">
+
+                                Scharr Y
+
+                                <span class="algorithm-code">
+                                    SCY
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     THRESHOLDING
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Thresholding
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="threshold"
+                                name="algorithms"
+                                value="threshold"
+                            >
+
+                            <label for="threshold">
+
+                                Binary Threshold
+
+                                <span class="algorithm-code">
+                                    THR
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="otsu"
+                                name="algorithms"
+                                value="otsu"
+                            >
+
+                            <label for="otsu">
+
+                                Otsu Threshold
+
+                                <span class="algorithm-code">
+                                    OTSU
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="adaptive_threshold"
+                                name="algorithms"
+                                value="adaptive_threshold"
+                            >
+
+                            <label for="adaptive_threshold">
+
+                                Adaptive Threshold
+
+                                <span class="algorithm-code">
+                                    ADAPT
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     MORPHOLOGY
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Morphology
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="erosion"
+                                name="algorithms"
+                                value="erosion"
+                            >
+
+                            <label for="erosion">
+
+                                Erosion
+
+                                <span class="algorithm-code">
+                                    ERODE
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="dilation"
+                                name="algorithms"
+                                value="dilation"
+                            >
+
+                            <label for="dilation">
+
+                                Dilation
+
+                                <span class="algorithm-code">
+                                    DILATE
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="opening"
+                                name="algorithms"
+                                value="opening"
+                            >
+
+                            <label for="opening">
+
+                                Opening
+
+                                <span class="algorithm-code">
+                                    OPEN
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="closing"
+                                name="algorithms"
+                                value="closing"
+                            >
+
+                            <label for="closing">
+
+                                Closing
+
+                                <span class="algorithm-code">
+                                    CLOSE
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="morphological_gradient"
+                                name="algorithms"
+                                value="morphological_gradient"
+                            >
+
+                            <label for="morphological_gradient">
+
+                                Morphological Gradient
+
+                                <span class="algorithm-code">
+                                    GRAD
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="top_hat"
+                                name="algorithms"
+                                value="top_hat"
+                            >
+
+                            <label for="top_hat">
+
+                                Top Hat
+
+                                <span class="algorithm-code">
+                                    TOP
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="black_hat"
+                                name="algorithms"
+                                value="black_hat"
+                            >
+
+                            <label for="black_hat">
+
+                                Black Hat
+
+                                <span class="algorithm-code">
+                                    BLACK
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FREQUENCY
+                ================================================== -->
+
+                <div class="algorithm-section">
+
+
+                    <div class="algorithm-section-title">
+                        Frequency Domain
+                    </div>
+
+
+                    <div class="algorithm-grid">
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="fft"
+                                name="algorithms"
+                                value="fft"
+                            >
+
+                            <label for="fft">
+
+                                FFT Spectrum
+
+                                <span class="algorithm-code">
+                                    FFT
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="low_pass"
+                                name="algorithms"
+                                value="low_pass"
+                            >
+
+                            <label for="low_pass">
+
+                                Low-Pass Filter
+
+                                <span class="algorithm-code">
+                                    LPF
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="algorithm-option">
+
+                            <input
+                                type="checkbox"
+                                id="high_pass"
+                                name="algorithms"
+                                value="high_pass"
+                            >
+
+                            <label for="high_pass">
+
+                                High-Pass Filter
+
+                                <span class="algorithm-code">
+                                    HPF
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     RUN
+                ================================================== -->
+
+                <div class="run-bar">
+
+
+                    <div
+                        class="selection-info"
+                        id="selectionInfo"
+                    >
+                        0 algorithms selected
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="run-button"
+                    >
+                        Run Comparison
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         RESULTS
+    ========================================================== -->
+
+    {% if comparison_complete %}
+
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+            Comparison Results
+        </div>
+
+
+        <div class="panel-body">
+
+
+            {% if image_urls %}
+
+
+            <div class="results-grid">
+
+
+                {% for algorithm, image_url in image_urls.items() %}
+
+
+                <article class="result-card">
+
+
+                    <div class="result-title">
+
+                        <span class="result-name">
+                            {{ algorithm }}
+                        </span>
+
+                        <span class="result-index">
+                            {{ loop.index }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="result-image-wrapper">
+
+                        <img
+                            src="{{ image_url }}"
+                            alt="{{ algorithm }}"
+                            class="result-image"
+                        >
+
+                    </div>
+
+
+                    <div class="result-footer">
+
+                        <a
+                            href="{{ image_url }}"
+                            target="_blank"
+                            class="result-link"
+                        >
+                            Open Result
+                        </a>
+
+                    </div>
+
+
+                </article>
+
+
+                {% endfor %}
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="empty-state">
+
+                <div class="empty-state-title">
+                    No comparison images generated
+                </div>
+
+                <div class="empty-state-text">
+                    Check the selected algorithms and run the comparison again.
+                </div>
+
+            </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         METRICS
+    ========================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+            Quantitative Metrics
+        </div>
+
+
+        <div class="panel-body">
+
+
+            {% if metrics %}
+
+
+            <div class="table-wrapper">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Algorithm
+                            </th>
+
+                            <th>
+                                Brightness
+                            </th>
+
+                            <th>
+                                Contrast
+                            </th>
+
+                            <th>
+                                Sharpness
+                            </th>
+
+                            <th>
+                                Noise
+                            </th>
+
+                            <th>
+                                MSE
+                            </th>
+
+                            <th>
+                                PSNR
+                            </th>
+
+                            <th>
+                                SSIM
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for algorithm, data in metrics.items() %}
+
+
+                        <tr>
+
+
+                            <td>
+                                {{ algorithm }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "brightness_processed",
+                                            data.get(
+                                                "brightness",
+                                                0
+                                            )
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "contrast_processed",
+                                            data.get(
+                                                "contrast",
+                                                0
+                                            )
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "sharpness_processed",
+                                            data.get(
+                                                "sharpness",
+                                                0
+                                            )
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "noise_processed",
+                                            data.get(
+                                                "noise",
+                                                0
+                                            )
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.4f"|format(
+                                        data.get(
+                                            "mse",
+                                            0
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "psnr",
+                                            0
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                    "%.4f"|format(
+                                        data.get(
+                                            "ssim",
+                                            0
+                                        )
+                                    )
+                                }}
+                            </td>
+
+
+                            <td>
+
+                                {{
+                                    "%.3f"|format(
+                                        data.get(
+                                            "time",
+                                            data.get(
+                                                "processing_time",
+                                                data.get(
+                                                    "processing_time_ms",
+                                                    0
+                                                )
+                                            )
+                                        )
+                                    )
+                                }}
+
+                            </td>
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            <div class="metric-note">
+
+                MSE, PSNR and SSIM compare each processed image
+                with the original image. Their interpretation depends
+                on the operation being evaluated. For example,
+                edge-detection outputs are intentionally very different
+                from the original image, so these metrics should not
+                be interpreted as universal quality rankings.
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="empty-state">
+
+                <div class="empty-state-title">
+                    No metrics available
+                </div>
+
+            </div>
+
+
+            {% endif %}
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================================
+         GRAPH
+    ========================================================== -->
+
+    <section class="panel">
+
+
+        <div class="panel-header">
+            Metric Visualization
+        </div>
+
+
+        <div class="panel-body">
+
+
+            <div class="graph-controls">
+
+                <label
+                    for="metricSelect"
+                    class="graph-label"
+                >
+                    Metric
+                </label>
+
+
+                <select
+                    id="metricSelect"
+                    class="metric-select"
+                >
+
+                    <option value="brightness">
+                        Brightness
+                    </option>
+
+                    <option value="contrast">
+                        Contrast
+                    </option>
+
+                    <option value="sharpness">
+                        Sharpness
+                    </option>
+
+                    <option value="noise">
+                        Noise
+                    </option>
+
+                    <option value="mse">
+                        MSE
+                    </option>
+
+                    <option value="psnr">
+                        PSNR
+                    </option>
+
+                    <option value="ssim">
+                        SSIM
+                    </option>
+
+                    <option value="time">
+                        Processing Time
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="chart-container">
+
+                <canvas
+                    id="comparisonChart"
+                ></canvas>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    {% endif %}
+
+
+    <!-- =========================================================
+         NOTE
+    ========================================================== -->
+
+    <div class="footer-note">
+
+        COLLAB comparison is intended for quantitative and visual
+        analysis of image-processing methods. A metric such as
+        PSNR or SSIM should not be treated as a universal ranking
+        criterion across fundamentally different operations such as
+        enhancement, filtering and edge detection.
+
+    </div>
+
+
+</main>
+
+
+<!-- =============================================================
+     SAFE DATA CONTAINER
+     
+     IMPORTANT:
+     Jinja is used only inside an HTML data attribute.
+     It is NOT inserted directly into JavaScript.
+============================================================= -->
+
+{% if comparison_complete and metrics %}
+
+<div
+    id="comparisonData"
+    data-metrics="{{ metrics | tojson | e }}"
+    hidden
+></div>
+
+{% endif %}
+
+
+<!-- =============================================================
+     JAVASCRIPT
+============================================================= -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =========================================================
+       SELECTION COUNTER
+    ========================================================= */
+
+    const form =
+        document.getElementById(
+            "comparisonForm"
+        );
+
+
+    const selectionInfo =
+        document.getElementById(
+            "selectionInfo"
+        );
+
+
+    if (form && selectionInfo) {
+
+        const checkboxes =
+            form.querySelectorAll(
+                'input[name="algorithms"]'
+            );
+
+
+        function updateSelectionCount() {
+
+            let count = 0;
+
+
+            checkboxes.forEach(
+                function (checkbox) {
+
+                    if (checkbox.checked) {
+
+                        count += 1;
+
+                    }
+
+                }
+            );
+
+
+            selectionInfo.textContent =
+                count +
+                (
+                    count === 1
+                        ? " algorithm selected"
+                        : " algorithms selected"
+                );
+        }
+
+
+        checkboxes.forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    "change",
+                    updateSelectionCount
+                );
+
+            }
+        );
+
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+                let count = 0;
+
+
+                checkboxes.forEach(
+                    function (checkbox) {
+
+                        if (checkbox.checked) {
+
+                            count += 1;
+
+                        }
+
+                    }
+                );
+
+
+                if (count === 0) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Select at least one algorithm."
+                    );
+
+                }
+
+            }
+        );
+
+
+        updateSelectionCount();
+
+    }
+
+
+    /* =========================================================
+       COMPARISON DATA
+    ========================================================= */
+
+    const dataContainer =
+        document.getElementById(
+            "comparisonData"
+        );
+
+
+    const metricSelect =
+        document.getElementById(
+            "metricSelect"
+        );
+
+
+    const canvas =
+        document.getElementById(
+            "comparisonChart"
+        );
+
+
+    if (
+        !dataContainer ||
+        !metricSelect ||
+        !canvas
+    ) {
+
+        return;
+
+    }
+
+
+    let metrics = {};
+
+
+    try {
+
+        const rawData =
+            dataContainer.getAttribute(
+                "data-metrics"
+            );
+
+
+        metrics =
+            JSON.parse(
+                rawData || "{}"
+            );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unable to read comparison data:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    if (!context) {
+
+        return;
+
+    }
+
+
+    /* =========================================================
+       METRIC EXTRACTION
+    ========================================================= */
+
+    function getMetricValue(
+        item,
+        metric
+    ) {
+
+        if (!item) {
+
+            return 0;
+
+        }
+
+
+        const keys = {
+
+            brightness: [
+                "brightness_processed",
+                "brightness"
+            ],
+
+            contrast: [
+                "contrast_processed",
+                "contrast"
+            ],
+
+            sharpness: [
+                "sharpness_processed",
+                "sharpness"
+            ],
+
+            noise: [
+                "noise_processed",
+                "noise"
+            ],
+
+            mse: [
+                "mse"
+            ],
+
+            psnr: [
+                "psnr"
+            ],
+
+            ssim: [
+                "ssim"
+            ],
+
+            time: [
+                "time",
+                "processing_time",
+                "processing_time_ms"
+            ]
+
+        };
+
+
+        const candidates =
+            keys[metric] || [metric];
+
+
+        for (
+            let i = 0;
+            i < candidates.length;
+            i++
+        ) {
+
+            const value =
+                item[
+                    candidates[i]
+                ];
+
+
+            if (
+                value !== undefined &&
+                value !== null &&
+                value !== ""
+            ) {
+
+                const number =
+                    Number(value);
+
+
+                if (
+                    Number.isFinite(number)
+                ) {
+
+                    return number;
+
+                }
+
+            }
+
+        }
+
+
+        return 0;
+
+    }
+
+
+    /* =========================================================
+       FORMAT NUMBER
+    ========================================================= */
+
+    function formatNumber(
+        value
+    ) {
+
+        if (
+            !Number.isFinite(
+                value
+            )
+        ) {
+
+            return "0";
+
+        }
+
+
+        if (
+            Math.abs(value) >= 1000
+        ) {
+
+            return value.toFixed(0);
+
+        }
+
+
+        if (
+            Math.abs(value) >= 100
+        ) {
+
+            return value.toFixed(1);
+
+        }
+
+
+        if (
+            Math.abs(value) >= 1
+        ) {
+
+            return value.toFixed(2);
+
+        }
+
+
+        return value.toFixed(4);
+
+    }
+
+
+    /* =========================================================
+       DRAW CHART
+    ========================================================= */
+
+    function drawChart(
+        metric
+    ) {
+
+        const algorithms =
+            Object.keys(
+                metrics
+            );
+
+
+        if (
+            algorithms.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        const width =
+            canvas.clientWidth || 900;
+
+
+        const height =
+            canvas.clientHeight || 380;
+
+
+        const ratio =
+            window.devicePixelRatio || 1;
+
+
+        canvas.width =
+            width * ratio;
+
+
+        canvas.height =
+            height * ratio;
+
+
+        context.setTransform(
+            ratio,
+            0,
+            0,
+            ratio,
+            0,
+            0
+        );
+
+
+        context.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        /* -----------------------------------------------------
+           BACKGROUND
+        ----------------------------------------------------- */
+
+        context.fillStyle =
+            "#101010";
+
+
+        context.fillRect(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+        /* -----------------------------------------------------
+           VALUES
+        ----------------------------------------------------- */
+
+        const values =
+            algorithms.map(
+                function (algorithm) {
+
+                    return getMetricValue(
+                        metrics[algorithm],
+                        metric
+                    );
+
+                }
+            );
+
+
+        let maximum =
+            Math.max.apply(
+                null,
+                values
+            );
+
+
+        if (
+            !Number.isFinite(
+                maximum
+            ) ||
+            maximum <= 0
+        ) {
+
+            maximum = 1;
+
+        }
+
+
+        /* -----------------------------------------------------
+           CHART AREA
+        ----------------------------------------------------- */
+
+        const left =
+            65;
+
+        const right =
+            20;
+
+        const top =
+            35;
+
+        const bottom =
+            85;
+
+
+        const chartWidth =
+            Math.max(
+                100,
+                width -
+                left -
+                right
+            );
+
+
+        const chartHeight =
+            Math.max(
+                100,
+                height -
+                top -
+                bottom
+            );
+
+
+        /* -----------------------------------------------------
+           TITLE
+        ----------------------------------------------------- */
+
+        const selectedOption =
+            metricSelect.options[
+                metricSelect.selectedIndex
+            ];
+
+
+        const title =
+            selectedOption
+                ? selectedOption.text
+                : metric;
+
+
+        context.fillStyle =
+            "#ccc";
+
+
+        context.font =
+            "600 13px Segoe UI, Arial";
+
+
+        context.textAlign =
+            "left";
+
+
+        context.fillText(
+            title,
+            left,
+            18
+        );
+
+
+        /* -----------------------------------------------------
+           GRID
+        ----------------------------------------------------- */
+
+        const gridCount =
+            5;
+
+
+        for (
+            let i = 0;
+            i <= gridCount;
+            i++
+        ) {
+
+            const fraction =
+                i /
+                gridCount;
+
+
+            const y =
+                top +
+                chartHeight -
+                fraction *
+                chartHeight;
+
+
+            context.strokeStyle =
+                "#292929";
+
+
+            context.lineWidth =
+                1;
+
+
+            context.beginPath();
+
+
+            context.moveTo(
+                left,
+                y
+            );
+
+
+            context.lineTo(
+                left +
+                chartWidth,
+                y
+            );
+
+
+            context.stroke();
+
+
+            const axisValue =
+                maximum *
+                fraction;
+
+
+            context.fillStyle =
+                "#666";
+
+
+            context.font =
+                "9px Consolas, monospace";
+
+
+            context.textAlign =
+                "right";
+
+
+            context.fillText(
+                formatNumber(
+                    axisValue
+                ),
+                left - 8,
+                y + 3
+            );
+
+        }
+
+
+        /* -----------------------------------------------------
+           AXIS
+        ----------------------------------------------------- */
+
+        context.strokeStyle =
+            "#555";
+
+
+        context.lineWidth =
+            1;
+
+
+        context.beginPath();
+
+
+        context.moveTo(
+            left,
+            top
+        );
+
+
+        context.lineTo(
+            left,
+            top +
+            chartHeight
+        );
+
+
+        context.lineTo(
+            left +
+            chartWidth,
+            top +
+            chartHeight
+        );
+
+
+        context.stroke();
+
+
+        /* -----------------------------------------------------
+           BARS
+        ----------------------------------------------------- */
+
+        const count =
+            values.length;
+
+
+        const gap =
+            Math.max(
+                8,
+                Math.min(
+                    18,
+                    chartWidth /
+                    (count * 10)
+                )
+            );
+
+
+        const barWidth =
+            Math.max(
+                12,
+                (
+                    chartWidth -
+                    gap *
+                    (count + 1)
+                ) /
+                count
+            );
+
+
+        values.forEach(
+            function (
+                value,
+                index
+            ) {
+
+                const x =
+                    left +
+                    gap +
+                    index *
+                    (
+                        barWidth +
+                        gap
+                    );
+
+
+                let normalized =
+                    value /
+                    maximum;
+
+
+                if (
+                    !Number.isFinite(
+                        normalized
+                    )
+                ) {
+
+                    normalized = 0;
+
+                }
+
+
+                normalized =
+                    Math.max(
+                        0,
+                        Math.min(
+                            1,
+                            normalized
+                        )
+                    );
+
+
+                const barHeight =
+                    normalized *
+                    chartHeight;
+
+
+                const y =
+                    top +
+                    chartHeight -
+                    barHeight;
+
+
+                /* Bar */
+
+                context.fillStyle =
+                    "#737373";
+
+
+                context.fillRect(
+                    x,
+                    y,
+                    barWidth,
+                    barHeight
+                );
+
+
+                /* Value */
+
+                context.fillStyle =
+                    "#bbb";
+
+
+                context.font =
+                    "8px Consolas, monospace";
+
+
+                context.textAlign =
+                    "center";
+
+
+                context.fillText(
+                    formatNumber(
+                        value
+                    ),
+                    x +
+                    barWidth / 2,
+                    Math.max(
+                        top + 11,
+                        y - 5
+                    )
+                );
+
+
+                /* Label */
+
+                let label =
+                    algorithms[index];
+
+
+                if (
+                    label.length > 14
+                ) {
+
+                    label =
+                        label.substring(
+                            0,
+                            13
+                        ) +
+                        "...";
+
+                }
+
+
+                context.save();
+
+
+                context.translate(
+                    x +
+                    barWidth / 2,
+                    top +
+                    chartHeight +
+                    12
+                );
+
+
+                context.rotate(
+                    -Math.PI / 4
+                );
+
+
+                context.fillStyle =
+                    "#777";
+
+
+                context.font =
+                    "8px Segoe UI, Arial";
+
+
+                context.textAlign =
+                    "right";
+
+
+                context.fillText(
+                    label,
+                    0,
+                    0
+                );
+
+
+                context.restore();
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       METRIC CHANGE
+    ========================================================= */
+
+    metricSelect.addEventListener(
+        "change",
+        function () {
+
+            drawChart(
+                this.value
+            );
+
+        }
+    );
+
+
+    /* =========================================================
+       INITIAL DRAW
+    ========================================================= */
+
+    drawChart(
+        metricSelect.value
+    );
+
+
+    /* =========================================================
+       RESIZE
+    ========================================================= */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            drawChart(
+                metricSelect.value
+            );
+
+        }
+    );
+
+
+})();
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>COLLAB — Imaging & Vision Workbench</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f5f7;
+            color: #20242a;
+            font-family:
+                "Segoe UI",
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        /* ==================================================
+           TOP BAR
+           ================================================== */
+
+        .topbar {
+            height: 68px;
+
+            background: #ffffff;
+
+            border-bottom:
+                1px solid #d8dce1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                0 30px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .brand-area {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+        }
+
+        .brand {
+            font-size: 24px;
+
+            font-weight: 750;
+
+            letter-spacing: 1.5px;
+
+            color: #171a1f;
+        }
+
+        .divider {
+            width: 1px;
+
+            height: 28px;
+
+            background: #d5d9de;
+        }
+
+        .product-name {
+            font-size: 14px;
+
+            color: #6b7280;
+
+            letter-spacing: 0.2px;
+        }
+
+        .status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 12px;
+
+            color: #59616b;
+        }
+
+        .status-dot {
+            width: 8px;
+
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+        }
+
+
+        /* ==================================================
+           MAIN
+           ================================================== */
+
+        .main {
+            max-width: 1280px;
+
+            margin:
+                0 auto;
+
+            padding:
+                38px 30px 50px;
+        }
+
+
+        /* ==================================================
+           HERO
+           ================================================== */
+
+        .hero {
+            margin-bottom: 34px;
+        }
+
+        .hero h1 {
+            margin:
+                0 0 9px;
+
+            font-size: 30px;
+
+            font-weight: 700;
+
+            letter-spacing: -0.4px;
+        }
+
+        .hero p {
+            margin: 0;
+
+            max-width: 760px;
+
+            color: #68717c;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ==================================================
+           WORKSPACE GRID
+           ================================================== */
+
+        .workspace-grid {
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1.65fr)
+                minmax(300px, 0.75fr);
+
+            gap: 22px;
+
+            margin-bottom: 28px;
+        }
+
+
+        /* ==================================================
+           PANELS
+           ================================================== */
+
+        .panel {
+            background: #ffffff;
+
+            border:
+                1px solid #d8dce1;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 1px 2px rgba(
+                    0,
+                    0,
+                    0,
+                    0.03
+                );
+        }
+
+        .panel-header {
+            padding:
+                18px 20px;
+
+            border-bottom:
+                1px solid #e4e7eb;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            margin: 0;
+
+            font-size: 15px;
+
+            font-weight: 650;
+        }
+
+        .panel-subtitle {
+            margin: 3px 0 0;
+
+            color: #7a828c;
+
+            font-size: 12px;
+        }
+
+        .panel-body {
+            padding: 22px;
+        }
+
+
+        /* ==================================================
+           UPLOAD AREA
+           ================================================== */
+
+        .upload-zone {
+            min-height: 330px;
+
+            border:
+                2px dashed #b9c0c8;
+
+            border-radius: 7px;
+
+            background: #fafbfc;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 35px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease;
+        }
+
+        .upload-zone:hover {
+            background: #f5f7f9;
+
+            border-color: #7b8490;
+        }
+
+        .upload-zone.dragover {
+            background: #eef1f4;
+
+            border-color: #3f4750;
+        }
+
+        .upload-icon {
+            width: 58px;
+
+            height: 58px;
+
+            border:
+                1px solid #cbd1d7;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            margin:
+                0 auto 18px;
+
+            font-size: 24px;
+
+            color: #4b5563;
+        }
+
+        .upload-title {
+            font-size: 16px;
+
+            font-weight: 650;
+
+            margin-bottom: 7px;
+        }
+
+        .upload-description {
+            color: #737c86;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            margin-bottom: 18px;
+        }
+
+        .browse-button {
+            display: inline-block;
+
+            background: #1f2937;
+
+            color: #ffffff;
+
+            padding:
+                10px 20px;
+
+            border-radius: 5px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .supported {
+            margin-top: 14px;
+
+            color: #9aa1a9;
+
+            font-size: 11px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+
+        /* ==================================================
+           RIGHT INFORMATION PANEL
+           ================================================== */
+
+        .info-row {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding:
+                12px 0;
+
+            border-bottom:
+                1px solid #edf0f2;
+
+            font-size: 13px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #747d87;
+        }
+
+        .info-value {
+            font-weight: 600;
+
+            text-align: right;
+
+            color: #30363d;
+        }
+
+
+        /* ==================================================
+           MODULES
+           ================================================== */
+
+        .section-heading {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            margin:
+                30px 0 14px;
+        }
+
+        .section-heading h2 {
+            margin: 0;
+
+            font-size: 18px;
+
+            font-weight: 680;
+        }
+
+        .section-heading span {
+            font-size: 12px;
+
+            color: #858d96;
+        }
+
+        .modules {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 15px;
+        }
+
+        .module {
+            background: #ffffff;
+
+            border:
+                1px solid #d8dce1;
+
+            border-radius: 7px;
+
+            padding: 20px;
+
+            min-height: 155px;
+
+            transition:
+                border-color 0.15s ease,
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .module:hover {
+            border-color: #aeb5bd;
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 4px 12px rgba(
+                    0,
+                    0,
+                    0,
+                    0.05
+                );
+        }
+
+        .module-icon {
+            width: 38px;
+
+            height: 38px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border:
+                1px solid #d5dae0;
+
+            border-radius: 6px;
+
+            margin-bottom: 15px;
+
+            background: #f8f9fa;
+
+            font-size: 17px;
+        }
+
+        .module h3 {
+            margin:
+                0 0 7px;
+
+            font-size: 14px;
+
+            font-weight: 650;
+        }
+
+        .module p {
+            margin: 0;
+
+            color: #737b85;
+
+            font-size: 12px;
+
+            line-height: 1.55;
+        }
+
+        .module-link {
+            display: block;
+
+            text-decoration: none;
+
+            color: inherit;
+        }
+
+
+        /* ==================================================
+           BATCH FEATURE
+           ================================================== */
+
+        .batch-panel {
+            margin-top: 25px;
+
+            background: #ffffff;
+
+            border:
+                1px solid #cfd5db;
+
+            border-radius: 8px;
+
+            display: grid;
+
+            grid-template-columns:
+                1.4fr 1fr;
+
+            overflow: hidden;
+        }
+
+        .batch-content {
+            padding: 28px;
+        }
+
+        .batch-label {
+            display: inline-block;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            color: #68717b;
+
+            margin-bottom: 10px;
+        }
+
+        .batch-content h2 {
+            margin:
+                0 0 10px;
+
+            font-size: 21px;
+        }
+
+        .batch-content p {
+            margin:
+                0 0 20px;
+
+            color: #6d7680;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            max-width: 600px;
+        }
+
+        .batch-features {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-bottom: 22px;
+        }
+
+        .feature-tag {
+            padding:
+                6px 10px;
+
+            background: #f2f4f6;
+
+            border:
+                1px solid #e0e4e8;
+
+            border-radius: 4px;
+
+            font-size: 11px;
+
+            color: #5d6670;
+        }
+
+        .batch-button {
+            display: inline-block;
+
+            padding:
+                11px 18px;
+
+            background: #1f2937;
+
+            color: #ffffff;
+
+            border-radius: 5px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+        .batch-visual {
+            background: #f6f7f8;
+
+            border-left:
+                1px solid #e0e3e7;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 30px;
+        }
+
+        .pipeline {
+            width: 100%;
+
+            max-width: 300px;
+        }
+
+        .pipeline-step {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding:
+                11px 13px;
+
+            background: #ffffff;
+
+            border:
+                1px solid #d9dde2;
+
+            border-radius: 5px;
+
+            font-size: 12px;
+
+            color: #515a64;
+        }
+
+        .pipeline-number {
+            width: 23px;
+
+            height: 23px;
+
+            border-radius: 4px;
+
+            background: #eef0f2;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+        .pipeline-arrow {
+            text-align: center;
+
+            color: #9aa1a9;
+
+            height: 17px;
+
+            font-size: 13px;
+        }
+
+
+        /* ==================================================
+           FOOTER
+           ================================================== */
+
+        .footer {
+            margin-top: 42px;
+
+            padding-top: 18px;
+
+            border-top:
+                1px solid #d8dce1;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            color: #8a929b;
+
+            font-size: 11px;
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 1050px) {
+
+            .modules {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .topbar {
+                padding:
+                    0 16px;
+            }
+
+            .product-name,
+            .divider {
+                display: none;
+            }
+
+            .main {
+                padding:
+                    25px 16px 40px;
+            }
+
+            .batch-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .batch-visual {
+                border-left: none;
+
+                border-top:
+                    1px solid #e0e3e7;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .modules {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 25px;
+            }
+
+            .upload-zone {
+                min-height: 280px;
+            }
+
+            .status {
+                display: none;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ======================================================
+     TOP BAR
+     ====================================================== -->
+
+<header class="topbar">
+
+    <div class="brand-area">
+
+        <div class="brand">
+            COLLAB
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="product-name">
+            Imaging & Vision Workbench
+        </div>
+
+    </div>
+
+
+    <div class="status">
+
+        <span class="status-dot"></span>
+
+        Local Processing
+
+    </div>
+
+</header>
+
+
+
+<!-- ======================================================
+     MAIN CONTENT
+     ====================================================== -->
+
+<main class="main">
+
+
+    <!-- ==================================================
+         HERO
+         ================================================== -->
+
+    <section class="hero">
+
+        <h1>
+            Engineering Image Processing
+        </h1>
+
+        <p>
+            A unified workstation for image enhancement,
+            filtering, analysis, computer vision and
+            intelligent processing. Upload an image to
+            begin a new processing session.
+        </p>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         WORKSPACE
+         ================================================== -->
+
+    <section class="workspace-grid">
+
+
+        <!-- ==============================================
+             UPLOAD PANEL
+             ============================================== -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2 class="panel-title">
+                        New Image Session
+                    </h2>
+
+                    <p class="panel-subtitle">
+                        Start a single-image engineering workflow
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <form
+                    action="/upload"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    id="uploadForm"
+                >
+
+                    <label
+                        class="upload-zone"
+                        id="uploadZone"
+                        for="imageInput"
+                    >
+
+                        <div>
+
+                            <div class="upload-icon">
+                                ↑
+                            </div>
+
+                            <div class="upload-title">
+                                Upload an image
+                            </div>
+
+                            <div class="upload-description">
+                                Drag and drop an image here,
+                                or select one from your computer.
+                            </div>
+
+                            <span class="browse-button">
+                                Browse Image
+                            </span>
+
+                            <div class="supported">
+                                JPG · JPEG · PNG · BMP · TIFF · WEBP
+                            </div>
+
+                        </div>
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        name="image"
+                        id="imageInput"
+                        accept="
+                            .jpg,
+                            .jpeg,
+                            .png,
+                            .bmp,
+                            .tif,
+                            .tiff,
+                            .webp
+                        "
+                        required
+                    >
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==============================================
+             SYSTEM INFORMATION
+             ============================================== -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2 class="panel-title">
+                        System
+                    </h2>
+
+                    <p class="panel-subtitle">
+                        Current workstation configuration
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel-body">
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Processing
+                    </span>
+
+                    <span class="info-value">
+                        Local
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Image Engine
+                    </span>
+
+                    <span class="info-value">
+                        OpenCV
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Analysis
+                    </span>
+
+                    <span class="info-value">
+                        Enabled
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Enhancement
+                    </span>
+
+                    <span class="info-value">
+                        Enabled
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        Batch Processing
+                    </span>
+
+                    <span class="info-value">
+                        Available
+                    </span>
+
+                </div>
+
+
+                <div class="info-row">
+
+                    <span class="info-label">
+                        AI / Vision
+                    </span>
+
+                    <span class="info-value">
+                        Extensible
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         PROCESSING MODULES
+         ================================================== -->
+
+    <div class="section-heading">
+
+        <h2>
+            Processing Modules
+        </h2>
+
+        <span>
+            COLLAB Workbench
+        </span>
+
+    </div>
+
+
+    <section class="modules">
+
+
+        <!-- ==============================================
+             ENHANCEMENT
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ◐
+                </div>
+
+                <h3>
+                    Image Enhancement
+                </h3>
+
+                <p>
+                    Histogram processing, gamma,
+                    log transformation, contrast
+                    enhancement and intelligent enhancement.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             SPATIAL FILTERS
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ▦
+                </div>
+
+                <h3>
+                    Spatial Filtering
+                </h3>
+
+                <p>
+                    Mean, Gaussian, median, bilateral
+                    filtering and noise reduction.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             EDGE DETECTION
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ◇
+                </div>
+
+                <h3>
+                    Edge Detection
+                </h3>
+
+                <p>
+                    Sobel, Laplacian and Canny
+                    operators for structural analysis.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             FREQUENCY DOMAIN
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ≋
+                </div>
+
+                <h3>
+                    Frequency Domain
+                </h3>
+
+                <p>
+                    FFT analysis and frequency-domain
+                    low-pass and high-pass filtering.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             MORPHOLOGY
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ⊞
+                </div>
+
+                <h3>
+                    Morphological Processing
+                </h3>
+
+                <p>
+                    Erosion, dilation, opening and
+                    closing for shape-based processing.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             IMAGE ANALYSIS
+             ============================================== -->
+
+        <a
+            href="#"
+            class="module-link"
+            onclick="
+                document
+                .getElementById('imageInput')
+                .click();
+                return false;
+            "
+        >
+
+            <div class="module">
+
+                <div class="module-icon">
+                    ∑
+                </div>
+
+                <h3>
+                    Image Analysis
+                </h3>
+
+                <p>
+                    Brightness, contrast, sharpness,
+                    noise and image-quality measurements.
+                </p>
+
+            </div>
+
+        </a>
+
+
+
+        <!-- ==============================================
+             AI / COMPUTER VISION
+             ============================================== -->
+
+        <div class="module">
+
+            <div class="module-icon">
+                AI
+            </div>
+
+            <h3>
+                AI & Computer Vision
+            </h3>
+
+            <p>
+                Object detection, face detection,
+                classification and custom trained models.
+            </p>
+
+        </div>
+
+
+
+        <!-- ==============================================
+             OCR
+             ============================================== -->
+
+        <div class="module">
+
+            <div class="module-icon">
+                Aa
+            </div>
+
+            <h3>
+                OCR & Data Extraction
+            </h3>
+
+            <p>
+                Text recognition and structured
+                information extraction from images.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         BATCH PROCESSING
+         ================================================== -->
+
+    <section class="batch-panel">
+
+
+        <div class="batch-content">
+
+            <span class="batch-label">
+                New Module
+            </span>
+
+            <h2>
+                Batch Image Processing
+            </h2>
+
+            <p>
+                Process multiple images using the same
+                operation. Convert formats, create
+                grayscale or black-and-white images,
+                apply filters and export all results
+                as a single ZIP package.
+            </p>
+
+
+            <div class="batch-features">
+
+                <span class="feature-tag">
+                    Multiple Images
+                </span>
+
+                <span class="feature-tag">
+                    Grayscale
+                </span>
+
+                <span class="feature-tag">
+                    Black & White
+                </span>
+
+                <span class="feature-tag">
+                    Negative
+                </span>
+
+                <span class="feature-tag">
+                    Sepia
+                </span>
+
+                <span class="feature-tag">
+                    Sharpen
+                </span>
+
+                <span class="feature-tag">
+                    Blur
+                </span>
+
+                <span class="feature-tag">
+                    Format Conversion
+                </span>
+
+                <span class="feature-tag">
+                    ZIP Export
+                </span>
+
+            </div>
+
+
+            <a
+                href="/batch"
+                class="batch-button"
+            >
+                Open Batch Processor
+            </a>
+
+        </div>
+
+
+
+        <div class="batch-visual">
+
+            <div class="pipeline">
+
+                <div class="pipeline-step">
+
+                    <span class="pipeline-number">
+                        01
+                    </span>
+
+                    Select multiple images
+
+                </div>
+
+
+                <div class="pipeline-arrow">
+                    ↓
+                </div>
+
+
+                <div class="pipeline-step">
+
+                    <span class="pipeline-number">
+                        02
+                    </span>
+
+                    Apply processing operation
+
+                </div>
+
+
+                <div class="pipeline-arrow">
+                    ↓
+                </div>
+
+
+                <div class="pipeline-step">
+
+                    <span class="pipeline-number">
+                        03
+                    </span>
+
+                    Select output format
+
+                </div>
+
+
+                <div class="pipeline-arrow">
+                    ↓
+                </div>
+
+
+                <div class="pipeline-step">
+
+                    <span class="pipeline-number">
+                        04
+                    </span>
+
+                    Download processed dataset
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         FOOTER
+         ================================================== -->
+
+    <footer class="footer">
+
+        <span>
+            COLLAB — Imaging & Vision Workbench
+        </span>
+
+        <span>
+            Local Engineering Environment
+        </span>
+
+    </footer>
+
+
+</main>
+
+
+
+<!-- ======================================================
+     JAVASCRIPT
+     ====================================================== -->
+
+<script>
+
+    const imageInput =
+        document.getElementById(
+            "imageInput"
+        );
+
+    const uploadZone =
+        document.getElementById(
+            "uploadZone"
+        );
+
+    const uploadForm =
+        document.getElementById(
+            "uploadForm"
+        );
+
+
+    /*
+     * Automatically submit when an image
+     * has been selected.
+     */
+
+    imageInput.addEventListener(
+        "change",
+        function () {
+
+            if (
+                imageInput.files &&
+                imageInput.files.length > 0
+            ) {
+
+                uploadForm.submit();
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Drag & Drop support
+     */
+
+    uploadZone.addEventListener(
+        "dragover",
+        function (event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.add(
+                "dragover"
+            );
+
+        }
+    );
+
+
+    uploadZone.addEventListener(
+        "dragleave",
+        function () {
+
+            uploadZone.classList.remove(
+                "dragover"
+            );
+
+        }
+    );
+
+
+    uploadZone.addEventListener(
+        "drop",
+        function (event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.remove(
+                "dragover"
+            );
+
+
+            const files =
+                event.dataTransfer.files;
+
+
+            if (
+                files &&
+                files.length > 0
+            ) {
+
+                imageInput.files = files;
+
+                uploadForm.submit();
+
+            }
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>
