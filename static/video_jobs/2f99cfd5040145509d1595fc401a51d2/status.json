@@ -1,0 +1,20 @@
+{
+  "state": "processing",
+  "message": "Processed 145 frames.",
+  "frames_processed": 145,
+  "total_frames": 272,
+  "percent": 53,
+  "operation": "fft",
+  "playback_speed": 1.0,
+  "output_url": "/video/file/2f99cfd5040145509d1595fc401a51d2/processed.mp4",
+  "download_url": "/video/download/2f99cfd5040145509d1595fc401a51d2",
+  "video_info": {
+    "frames_processed": 272,
+    "total_frames_reported": 272,
+    "fps": 23.65845997728865,
+    "source_fps": 23.65845997728865,
+    "playback_speed": 1.0,
+    "width": 480,
+    "height": 864
+  }
+}

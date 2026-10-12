@@ -1,0 +1,11 @@
+{
+  "state": "failed",
+  "message": "OCR extraction failed.",
+  "error": "Tesseract OCR engine was not found. Install Tesseract OCR for Windows, then restart COLLAB. If it is installed in a custom folder, set the TESSERACT_CMD environment variable to the full path of tesseract.exe.",
+  "output_url": null,
+  "download_url": null,
+  "csv_url": null,
+  "text_url": null,
+  "summary": null,
+  "updated_at": "2026-10-12T17:17:09+0530"
+}

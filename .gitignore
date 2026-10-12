@@ -5,3 +5,21 @@ offline_packages/
 static/uploads/
 static/outputs/
 static/batch/
+# Local Python environment and cache
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local secrets
+.env
+.env.*
+
+# Temporary files
+tempCodeRunnerFile.py
+*.tmp
+
+# Generated video and image outputs
+uploads/
+outputs/
+runs/

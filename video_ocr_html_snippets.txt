@@ -1,0 +1,157 @@
+COLLAB VIDEO LAB OCR UI PATCH
+Use this file with your existing templates/video.html. Do NOT replace the complete template.
+
+A) ADD THE OCR OUTPUT PANEL
+Find the existing section titled:
+  <h2>04 / YOLO object-detection output</h2>
+After the END of that whole YOLO output <section> (after its download buttons), add:
+
+<section class="panel">
+  <h2>05 / OCR text-extraction output</h2>
+  <p class="section-note">Recognized text is shown with timestamps. OCR runs on the selected frame interval; the annotated preview draws boxes on sampled frames.</p>
+  <div class="video-card">
+    <div class="video-head"><span>OCR-annotated video</span><small id="ocrVideoMeta">Not analysed</small></div>
+    <video id="ocrVideo" controls playsinline preload="metadata" class="hide"></video>
+    <div id="ocrEmpty" class="video-empty">Load a source video, then run OCR from the controls.</div>
+  </div>
+  <div id="ocrSummary" class="message">OCR results will appear here.</div>
+  <div class="transport">
+    <a id="ocrDownloadVideo" class="btn hide" href="#">Download OCR MP4</a>
+    <a id="ocrDownloadCsv" class="btn hide" href="#">Download OCR CSV</a>
+    <a id="ocrDownloadTxt" class="btn hide" href="#">Download extracted text</a>
+  </div>
+</section>
+
+B) ADD THE OCR CONTROLS PANEL
+Find the existing YOLO model controls panel (heading “05 / YOLO model controls”).
+Insert this new section AFTER the end of that YOLO controls </section>, and BEFORE the “06 / Session notes” section. After insertion, change the Session notes heading number from 06 to 07:
+
+<section class="panel">
+  <h2>06 / OCR text extraction</h2>
+  <p class="section-note">Local Tesseract OCR extracts visible text from video frames. English is the safest first test.</p>
+  <form id="ocrForm">
+    <div class="controls">
+      <div class="field wide">
+        <label for="ocr_language">OCR language</label>
+        <select id="ocr_language" name="language">
+          <option value="eng" selected>English</option>
+          <option value="hin">Hindi</option>
+          <option value="eng+hin">English + Hindi</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <label for="frame_stride">OCR every Nth frame</label>
+        <select id="frame_stride" name="frame_stride">
+          <option value="1">Every frame — slowest</option>
+          <option value="3">Every 3 frames</option>
+          <option value="5" selected>Every 5 frames — recommended</option>
+          <option value="10">Every 10 frames — faster</option>
+          <option value="15">Every 15 frames</option>
+          <option value="30">Every 30 frames — fastest</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <label for="min_confidence">Minimum OCR confidence</label>
+        <input id="min_confidence" name="min_confidence" type="number" min="0" max="100" step="5" value="35">
+      </div>
+    </div>
+    <button id="ocrButton" class="btn primary" style="width:100%;margin-top:14px" type="submit" disabled>Extract text with OCR</button>
+  </form>
+  <div id="ocrMessage" class="message" role="status">Load a source video before OCR.</div>
+  <p class="hint">Hindi requires the Hindi language data to be installed with Tesseract. If Hindi OCR fails, test English first.</p>
+</section>
+
+C) UPDATE THREE JAVASCRIPT DECLARATIONS
+Inside the <script>, find these existing lines and replace them exactly as follows.
+
+Replace:
+  const uploadForm = $('uploadForm'), processForm = $('processForm'), detectForm = $('detectForm');
+With:
+  const uploadForm = $('uploadForm'), processForm = $('processForm'), detectForm = $('detectForm'), ocrForm = $('ocrForm');
+
+Replace:
+  const original = $('originalVideo'), processed = $('processedVideo'), detection = $('detectionVideo');
+With:
+  const original = $('originalVideo'), processed = $('processedVideo'), detection = $('detectionVideo'), ocrVideo = $('ocrVideo');
+
+Replace the current enableAfterUpload function:
+  function enableAfterUpload(enabled) { $('processButton').disabled = !enabled || busy; $('detectButton').disabled = !enabled || busy; $('playBoth').disabled = !enabled; $('pauseBoth').disabled = !enabled; $('syncBoth').disabled = !enabled; $('timeline').disabled = !enabled; $('refreshHist').disabled = !enabled; }
+With:
+  function enableAfterUpload(enabled) { $('processButton').disabled = !enabled || busy; $('detectButton').disabled = !enabled || busy; $('ocrButton').disabled = !enabled || busy; $('playBoth').disabled = !enabled; $('pauseBoth').disabled = !enabled; $('syncBoth').disabled = !enabled; $('timeline').disabled = !enabled; $('refreshHist').disabled = !enabled; }
+
+D) CLEAR OLD OCR OUTPUT WHEN A NEW VIDEO IS LOADED
+In the uploadForm submit handler, find the line that starts with:
+  jobId = result.job_id; inputUrl = result.input_url;
+Immediately after that statement's existing video resets, add:
+  ocrVideo.pause(); ocrVideo.removeAttribute('src'); ocrVideo.load();
+
+In the same upload handler, find the line containing `$('detectionSummary').textContent='Detection summary will appear here.';` and append these resets after it:
+  $('ocrDownloadVideo').classList.add('hide'); $('ocrDownloadCsv').classList.add('hide'); $('ocrDownloadTxt').classList.add('hide');
+  $('ocrSummary').textContent = 'OCR results will appear here.'; $('ocrVideoMeta').textContent = 'Not analysed';
+
+E) STOP OCR FROM RUNNING AT THE SAME TIME AS OTHER VIDEO TASKS
+In the processForm and detectForm submit handlers, add this line where their other buttons are disabled at the start:
+  $('ocrButton').disabled = true;
+
+F) ADD THE OCR JAVASCRIPT HANDLER
+Find the end of the existing YOLO `detectForm.addEventListener('submit', ...);` handler.
+Immediately AFTER that complete handler and BEFORE the comment `// Native canvas bar charts: no third-party chart CDN is required.`, insert:
+
+  // OCR runs separately from image processing and YOLO.
+  ocrForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!jobId || busy) return;
+    busy = true;
+    $('processButton').disabled = true;
+    $('detectButton').disabled = true;
+    $('ocrButton').disabled = true;
+    $('ocrDownloadVideo').classList.add('hide');
+    $('ocrDownloadCsv').classList.add('hide');
+    $('ocrDownloadTxt').classList.add('hide');
+    $('ocrSummary').textContent = 'OCR is scanning selected frames. Longer videos can take a while; keep this tab open.';
+    message('ocrMessage', 'Starting local Tesseract OCR…');
+    status('OCR extraction running');
+    try {
+      const response = await fetch(`/video/ocr/${encodeURIComponent(jobId)}`, {
+        method: 'POST', body: new FormData(ocrForm)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'OCR extraction failed.');
+
+      ocrVideo.src = result.video_url + (result.video_url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      ocrVideo.load();
+      setVideoVisible(ocrVideo, 'ocrEmpty', true);
+      $('ocrDownloadVideo').href = result.download_url;
+      $('ocrDownloadVideo').classList.remove('hide');
+      $('ocrDownloadCsv').href = result.csv_url;
+      $('ocrDownloadCsv').classList.remove('hide');
+      $('ocrDownloadTxt').href = result.text_url;
+      $('ocrDownloadTxt').classList.remove('hide');
+
+      const summary = result.summary || {};
+      $('ocrSummary').textContent =
+        `Frames in output: ${summary.frames_processed ?? '—'} | Frames OCR-scanned: ${summary.frames_ocr_scanned ?? '—'} | Text lines found: ${summary.text_lines_found ?? 0}\n` +
+        `Language: ${summary.language || '—'} | Frame interval: ${summary.frame_stride ?? '—'} | Elapsed: ${summary.elapsed_seconds ?? '—'} s`;
+      $('ocrVideoMeta').textContent = `${summary.text_lines_found ?? 0} text lines · ${summary.frames_ocr_scanned ?? '—'} sampled frames`;
+      message('ocrMessage', 'OCR completed. The annotated video, CSV and timestamped text file are ready.', 'good');
+      status('OCR extraction complete');
+    } catch (error) {
+      message('ocrMessage', error.message, 'error');
+      $('ocrSummary').textContent = 'No completed OCR output is available.';
+      status('OCR extraction failed', 'error');
+    } finally {
+      busy = false;
+      enableAfterUpload(Boolean(jobId));
+    }
+  });
+
+G) FINAL SMALL CLEANUPS
+At the bottom of the script, find the initial empty-state line:
+  setVideoVisible(original,'originalEmpty',false); setVideoVisible(processed,'processedEmpty',false); setCompareMode();
+Replace it with:
+  setVideoVisible(original,'originalEmpty',false); setVideoVisible(processed,'processedEmpty',false); setVideoVisible(ocrVideo,'ocrEmpty',false); setCompareMode();
+
+Near the end, after the existing `detection.addEventListener('error', ...);`, add:
+  ocrVideo.addEventListener('error', () => message('ocrMessage', 'OCR output exists, but the browser could not decode its video. Check the H.264 encoder installation.', 'error'));
+
+Save templates/video.html. Do not change other operations or remove existing YOLO JavaScript.

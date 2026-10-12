@@ -1,0 +1,24 @@
+{
+  "state": "completed",
+  "message": "YOLO detection completed.",
+  "error": null,
+  "output_url": "/video/detect/file/49b1480a88f845f3b85b01d08be282b2",
+  "csv_url": "/video/detect/csv/49b1480a88f845f3b85b01d08be282b2",
+  "summary": {
+    "frames_processed": 171,
+    "detections_total": 128,
+    "class_counts": {
+      "car": 128
+    },
+    "fps": 29.83,
+    "width": 1080,
+    "height": 1920,
+    "output_size_bytes": 10549049,
+    "elapsed_seconds": 23.16,
+    "model": "yolo26n.pt",
+    "confidence": 0.25,
+    "image_size": 640
+  },
+  "updated_at": "2026-10-12T10:44:01+0530",
+  "download_url": "/video/detect/download/49b1480a88f845f3b85b01d08be282b2"
+}

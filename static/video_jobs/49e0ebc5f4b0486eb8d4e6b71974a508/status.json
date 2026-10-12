@@ -1,0 +1,26 @@
+{
+  "state": "completed",
+  "message": "Video processing completed.",
+  "frames_processed": 171,
+  "total_frames": 171,
+  "percent": 100,
+  "operation": "low_pass",
+  "playback_speed": 1.0,
+  "temporal_cancel": true,
+  "force_grayscale": false,
+  "updated_at": "2026-10-12T09:37:09+0530",
+  "output_url": "/video/file/49e0ebc5f4b0486eb8d4e6b71974a508/processed.mp4",
+  "download_url": "/video/download/49e0ebc5f4b0486eb8d4e6b71974a508",
+  "video_info": {
+    "frames_processed": 171,
+    "total_frames_reported": 171,
+    "output_frames_reported": 171,
+    "fps": 29.829974957551887,
+    "source_fps": 29.829974957551887,
+    "playback_speed": 1.0,
+    "width": 1080,
+    "height": 1920,
+    "elapsed_seconds": 317.75,
+    "output_size_bytes": 4055088
+  }
+}

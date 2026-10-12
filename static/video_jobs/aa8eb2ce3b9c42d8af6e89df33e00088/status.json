@@ -1,0 +1,13 @@
+{
+  "state": "failed",
+  "message": "Browser-compatible video export requires imageio-ffmpeg. Install it in the COLLAB virtual environment with: python -m pip install imageio-ffmpeg, then process the video again.",
+  "frames_processed": 171,
+  "total_frames": 171,
+  "percent": 100,
+  "operation": "histogram_equalization",
+  "playback_speed": 1.0,
+  "temporal_cancel": true,
+  "force_grayscale": true,
+  "updated_at": "2026-10-12T09:48:27+0530",
+  "error": "Browser-compatible video export requires imageio-ffmpeg. Install it in the COLLAB virtual environment with: python -m pip install imageio-ffmpeg, then process the video again."
+}

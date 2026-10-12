@@ -1,0 +1,23 @@
+{
+  "state": "completed",
+  "message": "OCR extraction completed.",
+  "error": null,
+  "output_url": "/video/ocr/file/f82f2d175efd4f6a819065d05700ae42",
+  "download_url": "/video/ocr/download/f82f2d175efd4f6a819065d05700ae42",
+  "csv_url": "/video/ocr/csv/f82f2d175efd4f6a819065d05700ae42",
+  "text_url": "/video/ocr/text/f82f2d175efd4f6a819065d05700ae42",
+  "summary": {
+    "frames_processed": 206,
+    "frames_ocr_scanned": 42,
+    "text_lines_found": 1418,
+    "fps": 30.0,
+    "width": 720,
+    "height": 1280,
+    "output_size_bytes": 1996354,
+    "elapsed_seconds": 40.17,
+    "language": "eng",
+    "frame_stride": 5,
+    "min_confidence": 35.0
+  },
+  "updated_at": "2026-10-12T17:25:10+0530"
+}

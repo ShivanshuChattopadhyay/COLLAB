@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COLLAB — Video Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b0c;--panel:#131315;--panel2:#19191c;--line:#303034;--text:#ececee;--muted:#96969f;--accent:#f0f0f0;--good:#8de0ae;--bad:#ff9a9a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI",Arial,sans-serif}button,input,select{font:inherit}button,a{cursor:pointer}a{color:inherit;text-decoration:none}.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:20px;padding:13px 22px;background:#080809;border-bottom:1px solid var(--line)}.brand{font-weight:800;letter-spacing:2px}.tag{color:var(--muted);font:11px Consolas,monospace}.toplink{margin-left:auto;border:1px solid #48484d;padding:7px 11px;font-size:12px}.wrap{max-width:1500px;margin:auto;padding:22px}.intro{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}.intro h1{font-size:24px;margin:0 0 5px}.intro p{margin:0;color:var(--muted)}.status{font:12px Consolas,monospace;color:var(--muted);padding:8px 10px;border:1px solid var(--line);max-width:48%;overflow-wrap:anywhere}.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);padding:15px;margin-bottom:16px;min-width:0}.panel h2{font-size:13px;letter-spacing:.7px;text-transform:uppercase;margin:0 0 13px}.video-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.video-card{background:#080809;border:1px solid #29292d;min-width:0}.video-head{display:flex;justify-content:space-between;align-items:center;padding:9px 11px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:#c8c8cd}.video-head small{color:var(--muted);font-size:10px}.video-card video{display:block;width:100%;aspect-ratio:16/9;background:#000;object-fit:contain}.video-empty{display:grid;place-items:center;aspect-ratio:16/9;background:#09090a;color:#707078;text-align:center;padding:20px;font-size:12px}.transport{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.btn{border:1px solid #48484d;background:#1b1b1f;color:var(--text);padding:8px 11px}.btn.primary{background:#eee;color:#111;border-color:#eee;font-weight:700}.btn:disabled{opacity:.4;cursor:not-allowed}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label,.check{font-size:11px;color:#b6b6bd}.field input,.field select{width:100%;min-width:0;background:#09090b;color:var(--text);border:1px solid #39393f;padding:9px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:11px}.controls .wide{grid-column:1/-1}.checks{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px}.check{display:flex;gap:7px;align-items:center}.uploadrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.uploadrow input{max-width:100%;color:var(--muted)}.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.metric{background:#0a0a0c;border:1px solid #29292d;padding:9px}.metric span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.metric strong{display:block;font:12px Consolas,monospace;margin-top:3px;overflow-wrap:anywhere}.progress{height:5px;background:#29292d;margin-top:10px;overflow:hidden}.progress>div{height:100%;width:0;background:#eee;transition:width .2s}.range-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:12px}.range-row input{width:100%}.range-row output{font:11px Consolas,monospace;color:var(--muted)}.hist-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.hist-toolbar label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.hist-toolbar select{background:#080809;color:#eee;border:1px solid #39393f;padding:7px}.hist-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.hist-card{border:1px solid #2b2b30;background:#09090b;padding:10px;min-width:0}.hist-card h3{font-size:11px;text-transform:uppercase;color:#c9c9ce;margin:0 0 8px}.hist-card canvas{display:block;width:100%;height:175px}.hist-legend{font-size:10px;color:var(--muted);margin-top:5px}.hint{font-size:11px;color:var(--muted);margin-top:10px}.message{font-size:12px;color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere;margin-top:10px}.message.error{color:var(--bad)}.message.good{color:var(--good)}.section-note{font-size:11px;color:var(--muted);margin:-5px 0 12px}.footer{color:#666;font:10px Consolas,monospace;padding:12px 0 5px}.hide{display:none!important}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.side-column{display:grid;grid-template-columns:1fr 1fr;gap:12px}.side-column .panel{margin-bottom:0}}
+@media(max-width:680px){.wrap{padding:12px}.top{padding:12px}.tag{display:none}.intro{display:block}.status{max-width:none;margin-top:12px}.video-grid,.hist-grid,.side-column{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.meta{grid-template-columns:repeat(2,minmax(0,1fr))}.video-head{font-size:10px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="/">COLLAB</a><span class="tag">VIDEO PROCESSING WORKBENCH</span><a class="toplink" href="/">← Image Lab / Home</a></header>
+<main class="wrap">
+  <div class="intro"><div><h1>Video Lab</h1><p>Frame processing, synchronized comparison, histograms, YOLO object detection, and OCR text extraction.</p></div><div id="statusBadge" class="status">STATUS · Select a video to begin</div></div>
+  <section class="panel">
+    <h2>01 / Source video</h2>
+    <form id="uploadForm"><div class="uploadrow"><input id="videoFile" type="file" name="video" accept="video/*,.mp4,.avi,.mov,.mkv,.webm,.m4v" required><button class="btn primary" type="submit">Load video</button></div></form>
+    <div id="sourceMeta" class="meta hide"><div class="metric"><span>Resolution</span><strong id="metaResolution">—</strong></div><div class="metric"><span>Source FPS</span><strong id="metaFps">—</strong></div><div class="metric"><span>Frames</span><strong id="metaFrames">—</strong></div><div class="metric"><span>Duration</span><strong id="metaDuration">—</strong></div></div>
+    <div id="uploadMessage" class="message" role="status"></div>
+  </section>
+
+  <div class="layout"><div class="main-column">
+    <section class="panel"><h2>02 / Comparison monitor</h2><p class="section-note">Original and processed playback are linked by timeline position. Generate a processed version to enable both views.</p>
+      <div class="video-grid">
+        <div class="video-card"><div class="video-head"><span>Original</span><small id="originalTime">00:00.0</small></div><video id="originalVideo" controls playsinline preload="metadata"></video><div id="originalEmpty" class="video-empty">Load a source video to preview it.</div></div>
+        <div class="video-card"><div class="video-head"><span>Processed</span><small id="processedTime">Not processed</small></div><video id="processedVideo" controls playsinline preload="metadata"></video><div id="processedEmpty" class="video-empty">Processed output will appear here.</div></div>
+      </div>
+      <div class="transport"><button id="playBoth" class="btn" disabled>▶ Play both</button><button id="pauseBoth" class="btn" disabled>Ⅱ Pause both</button><button id="syncBoth" class="btn" disabled>↔ Sync position</button><label class="check">Comparison <select id="compareMode" style="margin-left:5px;background:#09090b;color:#eee;border:1px solid #39393f;padding:7px"><option value="side">Side by side</option><option value="original">Original only</option><option value="processed">Processed only</option></select></label></div>
+      <div class="range-row"><input id="timeline" type="range" min="0" max="1000" value="0" disabled aria-label="Comparison timeline"><output id="timelineLabel">00:00.0 / 00:00.0</output></div>
+      <div id="comparisonMessage" class="message"></div>
+    </section>
+    <section class="panel"><h2>03 / Frame histogram · bar graph</h2><div class="hist-toolbar"><label>Channels <select id="histMode"><option value="gray">Grayscale</option><option value="rgb">RGB channels</option></select></label><label><input id="overlayHist" type="checkbox" checked> Overlay original and processed</label><button id="refreshHist" class="btn" disabled>Refresh current frame</button></div>
+      <div class="hist-grid"><div class="hist-card"><h3>Original frame histogram</h3><canvas id="histOriginal" width="640" height="250" aria-label="Original video frame histogram"></canvas><div id="histOriginalLegend" class="hist-legend">Waiting for source frame</div></div><div class="hist-card"><h3>Processed frame histogram</h3><canvas id="histProcessed" width="640" height="250" aria-label="Processed video frame histogram"></canvas><div id="histProcessedLegend" class="hist-legend">Waiting for processed frame</div></div></div>
+      <p class="hint">The chart samples the currently displayed video frame in the browser and groups pixel intensities into 32 bins. It updates during playback and when you seek.</p>
+    </section>
+    <section class="panel"><h2>04 / YOLO object-detection output</h2>
+      <p class="section-note">The annotated video shows per-frame detections. The CSV contains each detected box and timestamp; counts are detections across frames, not unique tracked identities.</p>
+      <div class="video-card"><div class="video-head"><span>Annotated YOLO video</span><small id="detectionVideoMeta">Not analysed</small></div><video id="detectionVideo" controls playsinline preload="metadata" class="hide"></video><div id="detectionEmpty" class="video-empty">Load a video, then run YOLO detection from the controls.</div></div>
+      <div id="detectionSummary" class="message">Detection summary will appear here.</div>
+      <div class="transport"><a id="detectionDownload" class="btn hide" href="#">Download annotated MP4</a><a id="detectionCsv" class="btn hide" href="#">Download detections CSV</a></div>
+    </section>
+    <section class="panel"><h2>05 / OCR text-extraction output</h2>
+      <p class="section-note">Recognized text is timestamped. Bounding boxes are drawn on sampled frames; the original video remains unchanged.</p>
+      <div class="video-card"><div class="video-head"><span>OCR-annotated video</span><small id="ocrVideoMeta">Not analysed</small></div><video id="ocrVideo" controls playsinline preload="metadata" class="hide"></video><div id="ocrEmpty" class="video-empty">Load a source video, then run OCR from the controls.</div></div>
+      <div id="ocrSummary" class="message">OCR results will appear here.</div>
+      <div class="transport"><a id="ocrDownloadVideo" class="btn hide" href="#">Download OCR MP4</a><a id="ocrDownloadCsv" class="btn hide" href="#">Download OCR CSV</a><a id="ocrDownloadTxt" class="btn hide" href="#">Download extracted text</a></div>
+    </section>
+  </div>
+  <aside class="side-column">
+    <section class="panel"><h2>04 / Processing controls</h2><form id="processForm">
+      <div class="controls">
+        <div class="field wide"><label for="operation">Operation category</label><select name="operation" id="operation" required>
+          <optgroup label="Intensity and contrast"><option value="original">Original / no change</option><option value="grayscale">Grayscale</option><option value="negative">Image negative</option><option value="log">Log transform</option><option value="gamma">Gamma correction</option><option value="histogram_equalization">Histogram equalization</option><option value="contrast_stretch">Contrast stretching</option><option value="clahe">CLAHE enhancement</option><option value="auto_enhancement">Automatic enhancement</option></optgroup>
+          <optgroup label="Spatial filters"><option value="mean">Mean filter</option><option value="gaussian">Gaussian blur</option><option value="median">Median filter</option><option value="bilateral">Bilateral filter</option><option value="sharpen">Sharpen</option><option value="unsharp">Unsharp masking</option></optgroup>
+          <optgroup label="Edges and gradients"><option value="sobel">Sobel edges</option><option value="sobel_x">Sobel X</option><option value="sobel_y">Sobel Y</option><option value="laplacian">Laplacian</option><option value="scharr_x">Scharr X</option><option value="scharr_y">Scharr Y</option><option value="canny">Canny edges</option></optgroup>
+          <optgroup label="Thresholding"><option value="threshold">Binary threshold</option><option value="otsu">Otsu threshold</option><option value="adaptive_threshold">Adaptive threshold</option></optgroup>
+          <optgroup label="Morphology"><option value="erosion">Erosion</option><option value="dilation">Dilation</option><option value="opening">Opening</option><option value="closing">Closing</option><option value="morphological_gradient">Morphological gradient</option><option value="top_hat">Top hat</option><option value="black_hat">Black hat</option></optgroup>
+          <optgroup label="Frequency domain"><option value="fft">FFT spectrum</option><option value="inverse_fft">Inverse FFT</option><option value="low_pass">Low-pass filter</option><option value="high_pass">High-pass filter</option></optgroup>
+        </select></div>
+        <div class="field"><label for="gamma">Gamma</label><input id="gamma" name="gamma" type="number" min="0.1" max="5" step="0.1" value="1.0"></div>
+        <div class="field"><label for="kernel_size">Kernel size</label><select id="kernel_size" name="kernel_size"><option>3</option><option>5</option><option>7</option><option>9</option><option>11</option></select></div>
+        <div class="field"><label for="threshold">Threshold</label><input id="threshold" name="threshold" type="number" min="0" max="255" value="127"></div>
+        <div class="field"><label for="lower_threshold">Canny lower</label><input id="lower_threshold" name="lower_threshold" type="number" min="0" max="255" value="50"></div>
+        <div class="field"><label for="upper_threshold">Canny upper</label><input id="upper_threshold" name="upper_threshold" type="number" min="0" max="255" value="150"></div>
+        <div class="field"><label for="block_size">Adaptive block</label><input id="block_size" name="block_size" type="number" min="3" step="2" value="11"></div>
+        <div class="field"><label for="c">Adaptive C</label><input id="c" name="c" type="number" value="2"></div>
+        <div class="field wide"><label for="cutoff_frequency">Frequency cutoff</label><input id="cutoff_frequency" name="cutoff_frequency" type="number" min="1" value="30"></div>
+        <div class="field wide"><label for="playback_speed">Output playback speed</label><select id="playback_speed" name="playback_speed"><option value="0.5">0.5× — slow motion</option><option value="0.75">0.75×</option><option value="1" selected>1× — normal</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2× — fast</option></select></div>
+      </div>
+      <div class="checks"><label class="check"><input type="checkbox" name="temporal_cancel"> Temporal noise cancellation</label><label class="check"><input type="checkbox" name="force_grayscale"> Process in grayscale</label></div>
+      <button id="processButton" class="btn primary" style="width:100%;margin-top:14px" type="submit" disabled>Process video</button>
+    </form>
+    <div class="progress"><div id="progressFill"></div></div><div id="processMessage" class="message" role="status">Load a source video before processing.</div>
+    <a id="downloadLink" class="btn hide" style="display:block;text-align:center;margin-top:12px" href="#">Download processed MP4</a>
+    </section>
+    <section class="panel"><h2>05 / YOLO model controls</h2>
+      <form id="detectForm">
+        <div class="controls">
+          <div class="field wide"><label for="model_name">Detection model</label><select id="model_name" name="model_name"><option value="yolo26n.pt" selected>YOLO26 Nano — faster</option><option value="yolo26s.pt">YOLO26 Small — heavier</option></select></div>
+          <div class="field wide"><label for="confidence">Minimum confidence</label><input id="confidence" name="confidence" type="number" min="0.05" max="0.95" step="0.05" value="0.25"></div>
+          <div class="field wide"><label for="image_size">Inference image size</label><select id="image_size" name="image_size"><option value="320">320 — fastest</option><option value="480">480</option><option value="640" selected>640 — balanced</option><option value="960">960 — slower / small objects</option></select></div>
+          <div class="field wide"><label for="class_filter">Class filter (optional)</label><input id="class_filter" name="class_filter" type="text" placeholder="person, car, bus"><span class="hint">Separate multiple labels with commas. Leave blank to detect all model classes.</span></div>
+        </div>
+        <button id="detectButton" class="btn primary" style="width:100%;margin-top:14px" type="submit" disabled>Run YOLO detection</button>
+      </form>
+      <div id="detectMessage" class="message" role="status">Load a source video before detection.</div>
+    </section>
+    <section class="panel"><h2>06 / OCR text extraction</h2>
+      <p class="section-note">Extract visible text locally from video frames using the Tesseract OCR engine.</p>
+      <form id="ocrForm">
+        <div class="controls">
+          <div class="field wide"><label for="ocr_language">OCR language</label><select id="ocr_language" name="language"><option value="eng" selected>English</option><option value="hin">Hindi</option><option value="eng+hin">English + Hindi</option></select></div>
+          <div class="field wide"><label for="frame_stride">OCR every Nth frame</label><select id="frame_stride" name="frame_stride"><option value="1">Every frame — slowest</option><option value="3">Every 3 frames</option><option value="5" selected>Every 5 frames — recommended</option><option value="10">Every 10 frames — faster</option><option value="15">Every 15 frames</option><option value="30">Every 30 frames — fastest</option></select></div>
+          <div class="field wide"><label for="min_confidence">Minimum OCR confidence</label><input id="min_confidence" name="min_confidence" type="number" min="0" max="100" step="5" value="35"></div>
+        </div>
+        <button id="ocrButton" class="btn primary" style="width:100%;margin-top:14px" type="submit" disabled>Extract text with OCR</button>
+      </form>
+      <div id="ocrMessage" class="message" role="status">Load a source video before OCR.</div>
+      <p class="hint">Hindi OCR requires Hindi language data to be installed with Tesseract. Test English first if Hindi OCR fails.</p>
+    </section>
+    <section class="panel"><h2>07 / Session notes</h2><div class="hint">YOLO detects classes learned by the selected pretrained model. For objects outside those classes, the next stage is training or loading custom model weights. OCR can then be added for text extraction from selected frames or detected regions.</div></section>
+  </aside></div>
+  <div class="footer">COLLAB VIDEO LAB · LOCAL PROCESSING · ORIGINAL SOURCE IS PRESERVED</div>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const uploadForm = $('uploadForm'), processForm = $('processForm'), detectForm = $('detectForm'), ocrForm = $('ocrForm');
+  const original = $('originalVideo'), processed = $('processedVideo'), detection = $('detectionVideo'), ocrVideo = $('ocrVideo');
+  let jobId = null, inputUrl = null, outputUrl = null, busy = false, histTimer = null, lastHistAt = 0;
+  const formatTime = value => { if (!Number.isFinite(value) || value < 0) value = 0; const m = Math.floor(value / 60), s = value % 60; return `${String(m).padStart(2,'0')}:${s.toFixed(1).padStart(4,'0')}`; };
+  function status(text, type='') { $('statusBadge').textContent = 'STATUS · ' + text; $('processMessage').className = 'message ' + type; }
+  function message(id, text, type='') { $(id).textContent = text || ''; $(id).className = 'message ' + type; }
+  function setVideoVisible(video, empty, visible) { video.classList.toggle('hide', !visible); $(empty).classList.toggle('hide', visible); }
+  function enableAfterUpload(enabled) { $('processButton').disabled = !enabled || busy; $('detectButton').disabled = !enabled || busy; $('ocrButton').disabled = !enabled || busy; $('playBoth').disabled = !enabled; $('pauseBoth').disabled = !enabled; $('syncBoth').disabled = !enabled; $('timeline').disabled = !enabled; $('refreshHist').disabled = !enabled; }
+  function setCompareMode() { const mode = $('compareMode').value; const cards = document.querySelectorAll('.video-card'); cards[0].classList.toggle('hide', mode === 'processed'); cards[1].classList.toggle('hide', mode === 'original'); }
+  function syncByProgress(sourceVideo, targetVideo) { if (!Number.isFinite(sourceVideo.duration) || !Number.isFinite(targetVideo.duration) || sourceVideo.duration <= 0) return; const progress = sourceVideo.currentTime / sourceVideo.duration; const target = progress * targetVideo.duration; if (Math.abs(targetVideo.currentTime-target) > .25) targetVideo.currentTime = Math.min(target, Math.max(0,targetVideo.duration-.02)); }
+  function syncFrom(sourceVideo, targetVideo) { syncByProgress(sourceVideo, targetVideo); }
+  original.addEventListener('play', async () => { if (processed.src && processed.readyState >= 1) { syncFrom(original, processed); try { await processed.play(); } catch (_) {} } });
+  processed.addEventListener('play', async () => { if (original.readyState >= 1) { syncFrom(processed, original); try { await original.play(); } catch (_) {} } });
+  original.addEventListener('pause', () => { if (!original.ended) processed.pause(); });
+  processed.addEventListener('pause', () => { if (!processed.ended) original.pause(); });
+  original.addEventListener('seeking', () => { if (processed.src) syncFrom(original, processed); });
+  processed.addEventListener('seeking', () => { if (original.src) syncFrom(processed, original); });
+  original.addEventListener('timeupdate', () => { if (processed.src && !processed.paused && Math.abs(processed.currentTime / (processed.duration || 1) - original.currentTime / (original.duration || 1)) > .035) syncFrom(original, processed); updateTransport(); scheduleHist(); });
+  processed.addEventListener('timeupdate', () => { updateTransport(); scheduleHist(); });
+  original.addEventListener('loadedmetadata', updateTransport); processed.addEventListener('loadedmetadata', updateTransport);
+  original.addEventListener('seeked', () => { updateTransport(); drawHistograms(); }); processed.addEventListener('seeked', () => { updateTransport(); drawHistograms(); });
+  function updateTransport() {
+    $('originalTime').textContent = formatTime(original.currentTime) + (Number.isFinite(original.duration) ? ' / ' + formatTime(original.duration) : '');
+    $('processedTime').textContent = processed.src ? formatTime(processed.currentTime) + (Number.isFinite(processed.duration) ? ' / ' + formatTime(processed.duration) : '') : 'Not processed';
+    const duration = Number.isFinite(original.duration) ? original.duration : 0;
+    $('timeline').value = duration > 0 ? Math.round(original.currentTime / duration * 1000) : 0;
+    $('timelineLabel').textContent = `${formatTime(original.currentTime)} / ${formatTime(duration)}`;
+  }
+  $('timeline').addEventListener('input', () => { if (!Number.isFinite(original.duration) || original.duration <= 0) return; original.currentTime = Number($('timeline').value)/1000*original.duration; if (processed.src && Number.isFinite(processed.duration)) syncFrom(original,processed); updateTransport(); scheduleHist(); });
+  $('playBoth').addEventListener('click', async () => { if (!original.src) return; if (processed.src) syncFrom(original,processed); try { await original.play(); if (processed.src) await processed.play(); } catch (e) { message('comparisonMessage','Playback was blocked by the browser. Press Play on a video control.'); } });
+  $('pauseBoth').addEventListener('click', () => { original.pause(); processed.pause(); });
+  $('syncBoth').addEventListener('click', () => { if (processed.src) syncFrom(original,processed); updateTransport(); message('comparisonMessage','Playback positions synchronized.'); });
+  $('compareMode').addEventListener('change', setCompareMode);
+
+  uploadForm.addEventListener('submit', async event => {
+    event.preventDefault(); if (busy) return; const file = $('videoFile').files[0]; if (!file) { message('uploadMessage','Choose a video file first.','error'); return; }
+    const data = new FormData(); data.append('video',file); $('processButton').disabled = true; $('detectButton').disabled = true; $('ocrButton').disabled = true; status('Uploading source…'); message('uploadMessage','Uploading and validating video…');
+    try {
+      const response = await fetch('/video/upload',{method:'POST',body:data}); const result = await response.json(); if (!response.ok || !result.ok) throw new Error(result.error || 'Upload failed.');
+      jobId = result.job_id; inputUrl = result.input_url; outputUrl = null; original.src = inputUrl; original.load(); processed.pause(); processed.removeAttribute('src'); processed.load(); detection.pause(); detection.removeAttribute('src'); detection.load(); ocrVideo.pause(); ocrVideo.removeAttribute('src'); ocrVideo.load();
+      setVideoVisible(original,'originalEmpty',true); setVideoVisible(processed,'processedEmpty',false); setVideoVisible(detection,'detectionEmpty',false); setVideoVisible(ocrVideo,'ocrEmpty',false); $('downloadLink').classList.add('hide'); $('detectionDownload').classList.add('hide'); $('detectionCsv').classList.add('hide'); $('detectionSummary').textContent='Detection summary will appear here.'; $('detectionVideoMeta').textContent='Not analysed'; $('ocrDownloadVideo').classList.add('hide'); $('ocrDownloadCsv').classList.add('hide'); $('ocrDownloadTxt').classList.add('hide'); $('ocrSummary').textContent='OCR results will appear here.'; $('ocrVideoMeta').textContent='Not analysed'; $('sourceMeta').classList.remove('hide');
+      const m = result.metadata || {}; $('metaResolution').textContent = `${m.width || '—'} × ${m.height || '—'}`; $('metaFps').textContent = m.fps ?? '—'; $('metaFrames').textContent = m.frames ?? '—'; $('metaDuration').textContent = m.duration == null ? '—' : formatTime(m.duration);
+      enableAfterUpload(true); status('Source loaded'); message('uploadMessage',`Loaded ${file.name}`,'good'); message('processMessage','Choose an operation, then process the video.'); message('comparisonMessage','Original loaded. Processed comparison will be available after processing.'); updateTransport(); drawHistograms();
+    } catch (error) { status('Upload failed','error'); message('uploadMessage',error.message,'error'); $('processButton').disabled = true; }
+  });
+
+  processForm.addEventListener('submit', async event => {
+    event.preventDefault(); if (!jobId || busy) return; busy = true; $('processButton').disabled = true; $('detectButton').disabled = true; $('ocrButton').disabled = true; $('downloadLink').classList.add('hide'); $('progressFill').style.width='0%'; status('Processing…'); message('processMessage','Processing video frame by frame. Keep this tab open.');
+    try {
+      const response = await fetch(`/video/process/${encodeURIComponent(jobId)}`,{method:'POST',body:new FormData(processForm)}); const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'Processing failed.');
+      outputUrl = result.video_url + (result.video_url.includes('?')?'&':'?') + 'v=' + Date.now(); processed.src = outputUrl; processed.load(); setVideoVisible(processed,'processedEmpty',true); $('downloadLink').href = result.download_url; $('downloadLink').classList.remove('hide'); $('progressFill').style.width='100%';
+      const info = result.video_info || {}; const detail = `Completed: ${info.frames_processed ?? '—'} frames · ${info.width ?? '—'}×${info.height ?? '—'} · ${info.fps ?? '—'} FPS · ${info.output_size_bytes ? (info.output_size_bytes/1048576).toFixed(2)+' MB' : ''}`;
+      status('Processing complete'); message('processMessage',detail,'good'); message('comparisonMessage','Processed output ready. Press Play both or use the timeline to compare corresponding points.'); enableAfterUpload(true); drawHistograms();
+    } catch (error) { status('Processing failed'); message('processMessage',error.message,'error'); $('progressFill').style.width='0%'; }
+    finally { busy = false; enableAfterUpload(Boolean(jobId)); }
+  });
+
+  // YOLO object detection is deliberately a separate pipeline from image processing.
+  detectForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!jobId || busy) return;
+    busy = true;
+    $('detectButton').disabled = true;
+    $('processButton').disabled = true;
+    $('ocrButton').disabled = true;
+    $('detectionDownload').classList.add('hide');
+    $('detectionCsv').classList.add('hide');
+    $('detectionSummary').textContent = 'Running YOLO on each frame. Longer videos can take a while; keep this tab open.';
+    message('detectMessage', 'Loading model and analysing video frames…');
+    status('YOLO detection running');
+    try {
+      const response = await fetch(`/video/detect/${encodeURIComponent(jobId)}`, {method:'POST', body:new FormData(detectForm)});
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'YOLO detection failed.');
+      const nonce = 'v=' + Date.now();
+      detection.src = result.video_url + (result.video_url.includes('?') ? '&' : '?') + nonce;
+      detection.load();
+      setVideoVisible(detection, 'detectionEmpty', true);
+      $('detectionDownload').href = result.download_url;
+      $('detectionDownload').classList.remove('hide');
+      $('detectionCsv').href = result.csv_url;
+      $('detectionCsv').classList.remove('hide');
+      const summary = result.summary || {};
+      const classes = Object.entries(summary.class_counts || {});
+      const classText = classes.length ? classes.map(([name,count]) => `${name}: ${count}`).join(' · ') : 'No objects matched the selected settings.';
+      $('detectionSummary').textContent = `Model: ${summary.model || '—'} | Frames analysed: ${summary.frames_processed ?? '—'} | Total frame detections: ${summary.detections_total ?? 0}\n${classText}\nElapsed: ${summary.elapsed_seconds ?? '—'} s`;
+      $('detectionVideoMeta').textContent = `${summary.frames_processed ?? '—'} frames · ${summary.detections_total ?? 0} detections`;
+      message('detectMessage', 'YOLO detection completed. The output video and CSV are ready.', 'good');
+      status('YOLO detection complete');
+    } catch (error) {
+      message('detectMessage', error.message, 'error');
+      $('detectionSummary').textContent = 'No completed detection output is available.';
+      status('YOLO detection failed', 'error');
+    } finally {
+      busy = false;
+      enableAfterUpload(Boolean(jobId));
+    }
+  });
+
+  // OCR is its own local operation and does not alter processed or YOLO output.
+  ocrForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!jobId || busy) return;
+
+    busy = true;
+    enableAfterUpload(Boolean(jobId));
+    $('processButton').disabled = true;
+    $('detectButton').disabled = true;
+    $('ocrButton').disabled = true;
+    $('ocrDownloadVideo').classList.add('hide');
+    $('ocrDownloadCsv').classList.add('hide');
+    $('ocrDownloadTxt').classList.add('hide');
+    $('ocrSummary').textContent = 'OCR is scanning sampled frames. Keep this tab open until it finishes.';
+    message('ocrMessage', 'Starting local Tesseract OCR…');
+    status('OCR extraction running');
+
+    try {
+      const response = await fetch(`/video/ocr/${encodeURIComponent(jobId)}`, {
+        method: 'POST',
+        body: new FormData(ocrForm)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'OCR extraction failed.');
+
+      ocrVideo.src = result.video_url + (result.video_url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      ocrVideo.load();
+      setVideoVisible(ocrVideo, 'ocrEmpty', true);
+
+      $('ocrDownloadVideo').href = result.download_url;
+      $('ocrDownloadVideo').classList.remove('hide');
+      $('ocrDownloadCsv').href = result.csv_url;
+      $('ocrDownloadCsv').classList.remove('hide');
+      $('ocrDownloadTxt').href = result.text_url;
+      $('ocrDownloadTxt').classList.remove('hide');
+
+      const summary = result.summary || {};
+      $('ocrSummary').textContent =
+        `Frames in output: ${summary.frames_processed ?? '—'} | ` +
+        `Frames OCR-scanned: ${summary.frames_ocr_scanned ?? '—'} | ` +
+        `Text lines found: ${summary.text_lines_found ?? 0}\n` +
+        `Language: ${summary.language || '—'} | ` +
+        `Frame interval: ${summary.frame_stride ?? '—'} | ` +
+        `Elapsed: ${summary.elapsed_seconds ?? '—'} s`;
+      $('ocrVideoMeta').textContent =
+        `${summary.text_lines_found ?? 0} text lines · ${summary.frames_ocr_scanned ?? '—'} sampled frames`;
+      message('ocrMessage', 'OCR completed. The annotated video, CSV, and timestamped text file are ready.', 'good');
+      status('OCR extraction complete');
+    } catch (error) {
+      message('ocrMessage', error.message, 'error');
+      $('ocrSummary').textContent = 'No completed OCR output is available.';
+      status('OCR extraction failed', 'error');
+    } finally {
+      busy = false;
+      enableAfterUpload(Boolean(jobId));
+    }
+  });
+
+  // Native canvas bar charts: no third-party chart CDN is required.
+  const histogramCanvases = {original:$('histOriginal'),processed:$('histProcessed')};
+  function readHistogram(video) {
+    if (!video || !video.src || video.readyState < 2 || !video.videoWidth || !video.videoHeight) return null;
+    const canvas = document.createElement('canvas'); const w=160, h=Math.max(1,Math.round(video.videoHeight*w/video.videoWidth)); canvas.width=w; canvas.height=Math.min(120,h);
+    const ctx=canvas.getContext('2d',{willReadFrequently:true}); try { ctx.drawImage(video,0,0,canvas.width,canvas.height); const pixels=ctx.getImageData(0,0,canvas.width,canvas.height).data; const mode=$('histMode').value; const bins=32; const hist=mode==='gray'?{Gray:new Array(bins).fill(0)}:{Red:new Array(bins).fill(0),Green:new Array(bins).fill(0),Blue:new Array(bins).fill(0)};
+      for(let i=0;i<pixels.length;i+=4){ const r=pixels[i],g=pixels[i+1],b=pixels[i+2]; if(mode==='gray'){const y=Math.round(.299*r+.587*g+.114*b);hist.Gray[Math.min(bins-1,Math.floor(y/256*bins))]++;}else{hist.Red[Math.min(bins-1,Math.floor(r/256*bins))]++;hist.Green[Math.min(bins-1,Math.floor(g/256*bins))]++;hist.Blue[Math.min(bins-1,Math.floor(b/256*bins))]++;} }
+      const count=canvas.width*canvas.height; for(const key of Object.keys(hist)) hist[key]=hist[key].map(v=>v/count); return {hist,mode};
+    } catch(error) { return {error:'Frame is not available to sample. '+error.message}; }
+  }
+  const chartColors={Gray:'#bfc2c8',Red:'#ff6969',Green:'#7ee0a0',Blue:'#6ba7ff'};
+  function drawChart(canvas,data,overlayData,legendId,label) {
+    const ctx=canvas.getContext('2d'); const width=canvas.width,height=canvas.height; ctx.clearRect(0,0,width,height); ctx.fillStyle='#09090b';ctx.fillRect(0,0,width,height);
+    const left=38,right=10,top=14,bottom=28,plotW=width-left-right,plotH=height-top-bottom;
+    ctx.font='10px Consolas, monospace';ctx.strokeStyle='#303036';ctx.fillStyle='#96969f';ctx.lineWidth=1;
+    for(let i=0;i<=4;i++){const y=top+plotH*i/4;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(width-right,y);ctx.stroke();ctx.fillText((100-i*25)+'%',3,y+3);}
+    ctx.fillText('DARK',left, height-8);ctx.fillText('BRIGHT',width-right-43,height-8);
+    if(!data || data.error){$(legendId).textContent=data?.error||'Waiting for video frame';return;}
+    const entries=Object.entries(data.hist); const max=Math.max(0.001,...entries.flatMap(([key,vals])=>vals),...(overlayData?Object.values(overlayData.hist).flat():[]));
+    const bins=32, groupW=plotW/bins, barW=Math.max(1,groupW*.82);
+    entries.forEach(([key,values])=>{ctx.fillStyle=chartColors[key]||'#ccc';values.forEach((v,i)=>{const barH=v/max*plotH; if(overlayData && $('overlayHist').checked){ctx.globalAlpha=.58;}else{ctx.globalAlpha=.9;}ctx.fillRect(left+i*groupW+(groupW-barW)/2,top+plotH-barH,barW,barH);});});
+    if(overlayData && $('overlayHist').checked){ for(const [key,values] of Object.entries(overlayData.hist)){ctx.strokeStyle=chartColors[key]||'#fff';ctx.globalAlpha=.95;ctx.lineWidth=1.5;ctx.beginPath();values.forEach((v,i)=>{const x=left+i*groupW+groupW/2,y=top+plotH-v/max*plotH;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();} }
+    ctx.globalAlpha=1; $(legendId).textContent=label+' · '+entries.map(([key])=>key).join(' / ')+' · normalized pixel frequency';
+  }
+  function drawHistograms(){ const o=readHistogram(original),p=readHistogram(processed); const overlay=$('overlayHist').checked?p:null; drawChart(histogramCanvases.original,o,overlay,'histOriginalLegend','Original'); drawChart(histogramCanvases.processed,p,$('overlayHist').checked?o:null,'histProcessedLegend','Processed'); }
+  function scheduleHist(){const now=performance.now();if(now-lastHistAt<350){if(!histTimer)histTimer=setTimeout(()=>{histTimer=null;lastHistAt=performance.now();drawHistograms();},360);return;}lastHistAt=now;drawHistograms();}
+  $('histMode').addEventListener('change',drawHistograms); $('overlayHist').addEventListener('change',drawHistograms); $('refreshHist').addEventListener('click',drawHistograms);
+  original.addEventListener('loadeddata',()=>{setVideoVisible(original,'originalEmpty',true);drawHistograms();}); processed.addEventListener('loadeddata',()=>{setVideoVisible(processed,'processedEmpty',true);drawHistograms();});
+  // Initial empty states: the video element remains hidden until a valid source exists.
+  setVideoVisible(original,'originalEmpty',false); setVideoVisible(processed,'processedEmpty',false); setVideoVisible(ocrVideo,'ocrEmpty',false); setCompareMode();
+  // Make failed browser video decoding visible instead of leaving a blank panel.
+  original.addEventListener('error',()=>message('uploadMessage','Browser could not decode the source video for preview. Try MP4/H.264.','error'));
+  processed.addEventListener('error',()=>message('processMessage','Output was generated, but this browser could not decode it. Try opening the downloaded MP4 in a media player.','error'));
+  detection.addEventListener('error',()=>message('detectMessage','Detection output exists, but the browser could not decode it. Re-run detection after checking the H.264 encoder installation.','error'));
+  ocrVideo.addEventListener('loadeddata', () => setVideoVisible(ocrVideo, 'ocrEmpty', true));
+  ocrVideo.addEventListener('error',()=>message('ocrMessage','OCR output exists, but the browser could not decode it. Check H.264 support and retry.','error'));
+})();
+</script>
+</body>
+</html>

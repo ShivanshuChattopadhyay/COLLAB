@@ -1,0 +1,19 @@
+{
+  "state": "completed",
+  "message": "Video processing completed.",
+  "frames_processed": 272,
+  "total_frames": 272,
+  "percent": 100,
+  "operation": "histogram_equalization",
+  "temporal_cancel": true,
+  "force_grayscale": true,
+  "output_url": "/video/file/e69f6a14a2ed4abebdd8200488cda038/processed.mp4",
+  "download_url": "/video/download/e69f6a14a2ed4abebdd8200488cda038",
+  "video_info": {
+    "frames_processed": 272,
+    "total_frames_reported": 272,
+    "fps": 23.65845997728865,
+    "width": 480,
+    "height": 864
+  }
+}

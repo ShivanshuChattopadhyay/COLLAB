@@ -1,2879 +1,998 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>COLLAB — Processing Workspace</title>
-
-
-    <style>
-
-        /* =====================================================
-           GLOBAL
-        ===================================================== */
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            min-height: 100%;
-        }
-
-        body {
-            min-height: 100vh;
-
-            font-family:
-                "Segoe UI",
-                Arial,
-                sans-serif;
-
-            background: #111;
-            color: #d7d7d7;
-        }
-
-        button,
-        input,
-        select {
-            font-family: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-
-        /* =====================================================
-           TOP BAR
-        ===================================================== */
-
-        .topbar {
-
-            height: 58px;
-
-            background: #171717;
-
-            border-bottom: 1px solid #333;
-
-            display: flex;
-
-            align-items: center;
-
-            padding: 0 18px;
-
-            gap: 22px;
-
-            position: sticky;
-
-            top: 0;
-
-            z-index: 1000;
-        }
-
-
-        .brand {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 10px;
-        }
-
-
-        .brand-mark {
-
-            width: 29px;
-            height: 29px;
-
-            border: 2px solid #ddd;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            color: #eee;
-
-            font-size: 11px;
-
-            font-weight: 700;
-        }
-
-
-        .brand-name {
-
-            color: #eee;
-
-            font-size: 18px;
-
-            font-weight: 700;
-
-            letter-spacing: 2px;
-        }
-
-
-        .brand-subtitle {
-
-            color: #666;
-
-            font-size: 8px;
-
-            letter-spacing: 1px;
-
-            margin-top: 2px;
-        }
-
-
-        .top-title {
-
-            border-left: 1px solid #333;
-
-            padding-left: 20px;
-
-            color: #777;
-
-            font-size: 9px;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1.3px;
-        }
-
-
-        .top-actions {
-
-            margin-left: auto;
-
-            display: flex;
-
-            gap: 6px;
-        }
-
-
-        .top-button {
-
-            display: inline-flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            height: 31px;
-
-            padding: 0 12px;
-
-            border: 1px solid #383838;
-
-            background: #202020;
-
-            color: #aaa;
-
-            text-decoration: none;
-
-            font-size: 9px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .7px;
-        }
-
-
-        .top-button:hover {
-
-            background: #292929;
-
-            color: #fff;
-        }
-
-
-        /* =====================================================
-           MAIN LAYOUT
-        ===================================================== */
-
-        .layout {
-
-            display: grid;
-
-            grid-template-columns:
-                275px
-                minmax(450px, 1fr)
-                285px;
-
-            min-height:
-                calc(100vh - 58px);
-        }
-
-
-        /* =====================================================
-           LEFT SIDEBAR
-        ===================================================== */
-
-        .sidebar {
-
-            background: #171717;
-
-            border-right: 1px solid #303030;
-
-            height:
-                calc(100vh - 58px);
-
-            overflow-y: auto;
-
-            padding: 15px 11px;
-
-            position: sticky;
-
-            top: 58px;
-        }
-
-
-        .sidebar-title {
-
-            color: #777;
-
-            font-size: 9px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1.5px;
-
-            padding:
-                4px 8px
-                10px;
-        }
-
-
-        .operation-group {
-
-            margin-bottom: 18px;
-        }
-
-
-        .group-title {
-
-            color: #999;
-
-            font-size: 9px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1px;
-
-            padding:
-                6px 8px;
-
-            border-bottom:
-                1px solid #282828;
-
-            margin-bottom: 4px;
-        }
-
-
-        .operation-form {
-
-            margin: 0;
-
-            padding: 0;
-        }
-
-
-        .operation-button {
-
-            width: 100%;
-
-            min-height: 33px;
-
-            border: 0;
-
-            border-radius: 0;
-
-            background: transparent;
-
-            color: #999;
-
-            text-align: left;
-
-            padding:
-                8px 9px;
-
-            font-size: 10px;
-
-            transition:
-                background .12s,
-                color .12s;
-        }
-
-
-        .operation-button:hover {
-
-            background: #252525;
-
-            color: #eee;
-        }
-
-
-        .operation-button.ai {
-
-            color: #ccc;
-
-            background: #202020;
-        }
-
-
-        .operation-button.ai:hover {
-
-            background: #2a2a2a;
-
-            color: #fff;
-        }
-
-
-        .parameter-box {
-
-            padding:
-                6px 8px 7px;
-        }
-
-
-        .parameter-box label {
-
-            display: block;
-
-            color: #666;
-
-            font-size: 8px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .7px;
-
-            margin-bottom: 4px;
-        }
-
-
-        .parameter-box input {
-
-            width: 100%;
-
-            height: 28px;
-
-            background: #101010;
-
-            border: 1px solid #333;
-
-            color: #bbb;
-
-            padding:
-                0 7px;
-
-            font-size: 10px;
-
-            outline: none;
-        }
-
-
-        .parameter-box input:focus {
-
-            border-color: #666;
-
-            color: #fff;
-        }
-
-
-        /* =====================================================
-           MAIN WORKSPACE
-        ===================================================== */
-
-        .workspace {
-
-            min-width: 0;
-
-            background: #111;
-
-            padding: 18px;
-        }
-
-
-        .workspace-header {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            margin-bottom: 11px;
-        }
-
-
-        .workspace-title {
-
-            color: #ddd;
-
-            font-size: 13px;
-
-            font-weight: 650;
-
-            text-transform: uppercase;
-
-            letter-spacing: .8px;
-        }
-
-
-        .workspace-status {
-
-            color: #666;
-
-            font-family: Consolas, monospace;
-
-            font-size: 9px;
-        }
-
-
-        /* =====================================================
-           ERROR / FLASH
-        ===================================================== */
-
-        .message {
-
-            margin-bottom: 10px;
-
-            padding:
-                10px 12px;
-
-            background: #241818;
-
-            border: 1px solid #503131;
-
-            color: #c88;
-
-            font-size: 10px;
-        }
-
-
-        /* =====================================================
-           IMAGE VIEWER
-        ===================================================== */
-
-        .image-panel {
-
-            min-height: 540px;
-
-            background: #0c0c0c;
-
-            border: 1px solid #303030;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            padding: 15px;
-
-            overflow: hidden;
-        }
-
-
-        .working-image {
-
-            display: block;
-
-            max-width: 100%;
-
-            max-height: 70vh;
-
-            object-fit: contain;
-        }
-
-
-        .empty-image {
-
-            color: #555;
-
-            font-size: 10px;
-
-            text-align: center;
-        }
-
-
-        /* =====================================================
-           PIPELINE HISTORY
-        ===================================================== */
-
-        .history-panel {
-
-            margin-top: 10px;
-
-            background: #171717;
-
-            border: 1px solid #303030;
-
-            padding: 11px;
-        }
-
-
-        .panel-heading {
-
-            color: #777;
-
-            font-size: 8px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1.2px;
-
-            margin-bottom: 9px;
-        }
-
-
-        .history-list {
-
-            display: flex;
-
-            gap: 5px;
-
-            overflow-x: auto;
-        }
-
-
-        .history-item {
-
-            flex: 0 0 auto;
-
-            padding:
-                7px 9px;
-
-            background: #202020;
-
-            border: 1px solid #303030;
-
-            color: #777;
-
-            font-family: Consolas, monospace;
-
-            font-size: 8px;
-        }
-
-
-        .history-item.current {
-
-            background: #292929;
-
-            border-color: #555;
-
-            color: #ddd;
-        }
-
-
-        /* =====================================================
-           RIGHT PANEL
-        ===================================================== */
-
-        .analysis-panel {
-
-            background: #171717;
-
-            border-left: 1px solid #303030;
-
-            height:
-                calc(100vh - 58px);
-
-            overflow-y: auto;
-
-            padding: 15px 13px;
-
-            position: sticky;
-
-            top: 58px;
-        }
-
-
-        .analysis-section {
-
-            padding-bottom: 15px;
-
-            margin-bottom: 15px;
-
-            border-bottom: 1px solid #292929;
-        }
-
-
-        .analysis-section:last-child {
-
-            border-bottom: 0;
-        }
-
-
-        .analysis-title {
-
-            color: #777;
-
-            font-size: 8px;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-
-            letter-spacing: 1.2px;
-
-            margin-bottom: 10px;
-        }
-
-
-        /* =====================================================
-           METRIC ROWS
-        ===================================================== */
-
-        .metric-row {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            gap: 10px;
-
-            padding:
-                7px 0;
-
-            border-bottom: 1px solid #222;
-        }
-
-
-        .metric-row:last-child {
-
-            border-bottom: 0;
-        }
-
-
-        .metric-name {
-
-            color: #777;
-
-            font-size: 9px;
-        }
-
-
-        .metric-value {
-
-            color: #ccc;
-
-            font-family: Consolas, monospace;
-
-            font-size: 9px;
-
-            text-align: right;
-        }
-
-
-        /* =====================================================
-           ANALYSIS STATUS
-        ===================================================== */
-
-        .analysis-row {
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: space-between;
-
-            padding:
-                7px 0;
-
-            border-bottom: 1px solid #222;
-        }
-
-
-        .analysis-row:last-child {
-
-            border-bottom: 0;
-        }
-
-
-        .analysis-name {
-
-            color: #777;
-
-            font-size: 9px;
-        }
-
-
-        .status {
-
-            padding:
-                3px 6px;
-
-            font-size: 7px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .5px;
-
-            border: 1px solid #333;
-
-            color: #777;
-
-            background: #202020;
-        }
-
-
-        .status.detected {
-
-            color: #ddd;
-
-            border-color: #666;
-
-            background: #2a2a2a;
-        }
-
-
-        /* =====================================================
-           ORIGINAL / CURRENT
-        ===================================================== */
-
-        .comparison-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 6px;
-        }
-
-
-        .comparison-image {
-
-            width: 100%;
-
-            height: 105px;
-
-            object-fit: contain;
-
-            display: block;
-
-            background: #0d0d0d;
-
-            border: 1px solid #303030;
-        }
-
-
-        .comparison-label {
-
-            margin-top: 5px;
-
-            color: #666;
-
-            font-size: 8px;
-
-            text-align: center;
-
-            text-transform: uppercase;
-        }
-
-
-        /* =====================================================
-           ACTIONS
-        ===================================================== */
-
-        .action-stack {
-
-            display: flex;
-
-            flex-direction: column;
-
-            gap: 6px;
-        }
-
-
-        .action-stack form {
-
-            margin: 0;
-        }
-
-
-        .action-button {
-
-            width: 100%;
-
-            min-height: 32px;
-
-            border: 1px solid #363636;
-
-            background: #202020;
-
-            color: #999;
-
-            padding:
-                7px 9px;
-
-            font-size: 9px;
-
-            text-transform: uppercase;
-
-            letter-spacing: .5px;
-
-            text-decoration: none;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-        }
-
-
-        .action-button:hover {
-
-            background: #292929;
-
-            color: #eee;
-        }
-
-
-        .action-button.primary {
-
-            background: #ddd;
-
-            border-color: #ddd;
-
-            color: #111;
-
-            font-weight: 700;
-        }
-
-
-        .action-button.primary:hover {
-
-            background: #fff;
-        }
-
-
-        /* =====================================================
-           QUICK TOOLS
-        ===================================================== */
-
-        .quick-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 5px;
-        }
-
-
-        .quick-link {
-
-            min-height: 31px;
-
-            display: flex;
-
-            align-items: center;
-
-            justify-content: center;
-
-            background: #202020;
-
-            border: 1px solid #333;
-
-            color: #888;
-
-            text-decoration: none;
-
-            font-size: 8px;
-
-            text-transform: uppercase;
-        }
-
-
-        .quick-link:hover {
-
-            color: #eee;
-
-            background: #292929;
-        }
-
-
-        /* =====================================================
-           RESPONSIVE
-        ===================================================== */
-
-        @media (max-width: 1150px) {
-
-            .layout {
-
-                grid-template-columns:
-                    245px
-                    minmax(400px, 1fr);
-            }
-
-            .analysis-panel {
-
-                display: none;
-            }
-        }
-
-
-        @media (max-width: 800px) {
-
-            .top-title {
-
-                display: none;
-            }
-
-            .layout {
-
-                display: block;
-            }
-
-            .sidebar {
-
-                position: static;
-
-                height: auto;
-
-                max-height: 420px;
-
-                border-right: 0;
-
-                border-bottom: 1px solid #303030;
-            }
-
-            .workspace {
-
-                padding: 10px;
-            }
-
-            .image-panel {
-
-                min-height: 400px;
-            }
-
-            .analysis-panel {
-
-                display: block;
-
-                position: static;
-
-                height: auto;
-
-                border-left: 0;
-
-                border-top: 1px solid #303030;
-            }
-        }
-
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COLLAB — Processing Workbench</title>
+
+<style>
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #101010;
+    color: #e9e9e9;
+}
+
+body { overflow: hidden; }
+
+.topbar {
+    height: 58px;
+    background: #080808;
+    border-bottom: 1px solid #303030;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    gap: 18px;
+    position: relative;
+    z-index: 50;
+}
+
+.brand {
+    flex-shrink: 0;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.session {
+    font: 12px Consolas, monospace;
+    color: #888;
+    white-space: nowrap;
+}
+
+.menu-bar {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    gap: 2px;
+    min-width: 0;
+}
+
+.menu {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.menu > button {
+    height: 100%;
+    border: 0;
+    background: transparent;
+    color: #bbb;
+    padding: 0 11px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.menu:hover > button,
+.menu:focus-within > button {
+    background: #1c1c1c;
+    color: #fff;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 58px;
+    left: 0;
+    width: 270px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    background: #151515;
+    border: 1px solid #3a3a3a;
+    box-shadow: 0 14px 35px #000;
+    z-index: 100;
+    padding: 6px;
+}
+
+.menu:hover .dropdown,
+.menu:focus-within .dropdown {
+    display: block;
+}
+
+.dropdown-title {
+    padding: 8px 10px;
+    color: #777;
+    font: 10px Consolas, monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #292929;
+    margin-bottom: 4px;
+}
+
+.dropdown form,
+.dropdown a {
+    display: block;
+    margin: 0;
+}
+
+.op {
+    width: 100%;
+    display: block;
+    border: 0;
+    background: transparent;
+    color: #d0d0d0;
+    text-align: left;
+    padding: 9px 10px;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.op:hover {
+    background: #252525;
+    color: #fff;
+}
+
+.subform {
+    padding: 7px 10px;
+    border-top: 1px solid #292929;
+}
+
+.subform label {
+    display: block;
+    font: 10px Consolas, monospace;
+    color: #777;
+    margin: 5px 0 3px;
+}
+
+.subform input,
+.subform select {
+    width: 100%;
+    background: #0c0c0c;
+    border: 1px solid #444;
+    color: #eee;
+    padding: 6px;
+    font-size: 11px;
+}
+
+.subform button {
+    margin-top: 8px;
+    width: 100%;
+    background: #eee;
+    color: #111;
+    border: 0;
+    padding: 7px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.right-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 7px;
+    flex-shrink: 0;
+}
+
+.tool-link {
+    border: 1px solid #444;
+    background: #111;
+    color: #ddd;
+    padding: 7px 10px;
+    text-decoration: none;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.tool-link:hover {
+    background: #eee;
+    color: #111;
+}
+
+/* ---------------------------------------------------------
+   WORKSPACE FRAME AND MAIN IMAGE
+   --------------------------------------------------------- */
+
+.workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 285px;
+    width: 100%;
+    height: calc(100vh - 58px);
+    min-height: 0;
+    overflow: hidden;
+}
+
+.canvas-area {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: #111;
+    overflow: hidden;
+}
+
+.canvas-header {
+    flex: 0 0 42px;
+    height: 42px;
+    border-bottom: 1px solid #292929;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    color: #aaa;
+    font: 11px Consolas, monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.image-stage {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #0f0f0f;
+    background-image:
+        linear-gradient(45deg, #151515 25%, transparent 25%),
+        linear-gradient(-45deg, #151515 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #151515 75%),
+        linear-gradient(-45deg, transparent 75%, #151515 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+
+.working-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100vh - 230px);
+    object-fit: contain;
+    border: 1px solid #555;
+    box-shadow: 0 4px 25px #000;
+}
+
+.empty {
+    color: #666;
+    font: 12px Consolas, monospace;
+}
+
+/* ---------------------------------------------------------
+   ORIGINAL IMAGE THUMBNAIL
+   --------------------------------------------------------- */
+
+.original-preview {
+    position: absolute;
+    right: 16px;
+    bottom: 101px;
+    z-index: 10;
+    width: 132px;
+    padding: 7px;
+    background: #0b0b0b;
+    border: 1px solid #555;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65);
+}
+
+.original-preview-title {
+    margin-bottom: 6px;
+    color: #aaa;
+    font: 10px Consolas, monospace;
+    letter-spacing: 1px;
+}
+
+.original-preview img {
+    display: block;
+    width: 100%;
+    height: 78px;
+    object-fit: contain;
+    background: #151515;
+}
+
+/* ---------------------------------------------------------
+   PROCESSING PIPELINE HISTORY
+   --------------------------------------------------------- */
+
+.bottom-strip {
+    flex: 0 0 92px;
+    min-height: 92px;
+    border-top: 1px solid #292929;
+    background: #0b0b0b;
+    padding: 10px 14px;
+    display: flex;
+    gap: 14px;
+    overflow: auto;
+}
+
+.history {
+    flex: 1;
+    min-width: 0;
+    overflow: auto;
+}
+
+.history-title {
+    font: 10px Consolas, monospace;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.history-list {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid #333;
+    padding: 5px 8px;
+    color: #aaa;
+    font-size: 10px;
+}
+
+.chip.current {
+    color: #fff;
+    border-color: #777;
+}
+
+/* ---------------------------------------------------------
+   RIGHT SIDEBAR
+   --------------------------------------------------------- */
+
+.side {
+    min-width: 0;
+    background: #151515;
+    border-left: 1px solid #303030;
+    overflow-y: auto;
+}
+
+.panel {
+    padding: 15px;
+    border-bottom: 1px solid #303030;
+}
+
+.panel h3 {
+    margin: 0 0 12px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 600;
+}
+
+.metric {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid #242424;
+    font: 11px Consolas, monospace;
+}
+
+.metric span:last-child {
+    color: #fff;
+}
+
+.session-actions {
+    display: grid;
+    gap: 6px;
+}
+
+.session-actions form {
+    margin: 0;
+}
+
+.side-button,
+.side-link {
+    width: 100%;
+    display: block;
+    text-align: left;
+    text-decoration: none;
+    border: 1px solid #383838;
+    background: #101010;
+    color: #ccc;
+    padding: 8px 9px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.side-button:hover,
+.side-link:hover {
+    background: #eee;
+    color: #111;
+}
+
+.notice {
+    font: 10px/1.5 Consolas, monospace;
+    color: #777;
+}
+
+/* ---------------------------------------------------------
+   FLASH MESSAGES
+   --------------------------------------------------------- */
+
+.flash {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    max-width: min(480px, calc(100vw - 36px));
+    background: #eee;
+    color: #111;
+    padding: 10px 14px;
+    border: 1px solid #777;
+    font-size: 11px;
+    z-index: 200;
+    overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE LAYOUT
+   --------------------------------------------------------- */
+
+@media (max-width: 1150px) {
+    .topbar {
+        gap: 9px;
+        padding: 0 10px;
+    }
+
+    .session {
+        display: none;
+    }
+
+    .menu > button {
+        padding: 0 8px;
+    }
+}
+
+@media (max-width: 900px) {
+    html,
+    body {
+        overflow: auto;
+        height: auto;
+        min-height: 100%;
+    }
+
+    .topbar {
+        height: auto;
+        min-height: 58px;
+        flex-wrap: wrap;
+    }
+
+    .menu-bar {
+        height: 46px;
+        flex-wrap: wrap;
+    }
+
+    .workspace {
+        height: auto;
+        min-height: calc(100vh - 104px);
+        grid-template-columns: minmax(0, 1fr);
+        overflow: visible;
+    }
+
+    .canvas-area {
+        min-height: 70vh;
+    }
+
+    .image-stage {
+        min-height: 48vh;
+    }
+
+    .working-image {
+        max-height: 58vh;
+    }
+
+    .original-preview {
+        right: 10px;
+        bottom: 100px;
+        width: 105px;
+    }
+
+    .side {
+        display: block;
+        border-left: 0;
+    }
+
+    .dropdown {
+        top: 46px;
+    }
+}
+</style>
 </head>
-
 
 <body>
 
-
-<!-- =============================================================
-     TOP BAR
-============================================================= -->
-
 <header class="topbar">
+    <div class="brand">COLLAB</div>
 
+    <div class="session">
+        IMAGE PROCESSING WORKBENCH / {{ job_id }}
+    </div>
 
-    <div class="brand">
+    <nav class="menu-bar">
 
-        <div class="brand-mark">
-            C
+        <!-- FILE -->
+        <div class="menu">
+            <button type="button">File</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Session</div>
+
+                <a class="op" href="{{ url_for('new_image') }}">
+                    New image
+                </a>
+
+                <a class="op" href="{{ url_for('download', job_id=job_id) }}">
+                    Export current result
+                </a>
+
+                <form method="POST" action="{{ url_for('reset', job_id=job_id) }}">
+                    <button class="op" type="submit">Reset pipeline</button>
+                </form>
+            </div>
         </div>
 
-
-        <div>
-
-            <div class="brand-name">
-                COLLAB
-            </div>
-
-            <div class="brand-subtitle">
-                IMAGING & VISION WORKBENCH
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="top-title">
-        Processing Workspace
-    </div>
-
-
-    <div class="top-actions">
-
-        <a
-            href="/new"
-            class="top-button"
-        >
-            New Image
-        </a>
-
-    </div>
-
-
-</header>
-
-
-<!-- =============================================================
-     THREE COLUMN LAYOUT
-============================================================= -->
-
-<div class="layout">
-
-
-<!-- =============================================================
-     LEFT OPERATIONS
-============================================================= -->
-
-<aside class="sidebar">
-
-
-    <div class="sidebar-title">
-        Processing Operations
-    </div>
-
-
-    <!-- =========================================================
-         ENHANCEMENT
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Enhancement
-        </div>
-
-
-        <!-- Negative -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="negative"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Image Negative
-            </button>
-
-        </form>
-
-
-        <!-- Log -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="log"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Log Transform
-            </button>
-
-        </form>
-
-
-        <!-- Gamma -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="gamma"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Gamma
-                </label>
-
-                <input
-                    type="number"
-                    name="gamma"
-                    value="1.0"
-                    min="0.1"
-                    max="5"
-                    step="0.1"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Gamma Transform
-            </button>
-
-        </form>
-
-
-        <!-- Histogram -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="histogram_equalization"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Histogram Equalization
-            </button>
-
-        </form>
-
-
-        <!-- Contrast -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="contrast_stretch"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Contrast Stretch
-            </button>
-
-        </form>
-
-
-        <!-- CLAHE -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="clahe"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                CLAHE
-            </button>
-
-        </form>
-
-
-        <!-- Automatic -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="auto_enhancement"
-            >
-
-            <button
-                type="submit"
-                class="operation-button ai"
-            >
-                Automatic Enhancement
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- =========================================================
-         FILTERING
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Spatial Filtering
-        </div>
-
-
-        <!-- Mean -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="mean"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Kernel Size
-                </label>
-
-                <input
-                    type="number"
-                    name="kernel_size"
-                    value="3"
-                    min="3"
-                    max="15"
-                    step="2"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Mean Filter
-            </button>
-
-        </form>
-
-
-        <!-- Gaussian -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="gaussian"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Kernel Size
-                </label>
-
-                <input
-                    type="number"
-                    name="kernel_size"
-                    value="5"
-                    min="3"
-                    max="15"
-                    step="2"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Gaussian Filter
-            </button>
-
-        </form>
-
-
-        <!-- Median -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="median"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Kernel Size
-                </label>
-
-                <input
-                    type="number"
-                    name="kernel_size"
-                    value="5"
-                    min="3"
-                    max="15"
-                    step="2"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Median Filter
-            </button>
-
-        </form>
-
-
-        <!-- Bilateral -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="bilateral"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Bilateral Filter
-            </button>
-
-        </form>
-
-
-        <!-- Sharpen -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="sharpen"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Sharpen
-            </button>
-
-        </form>
-
-
-        <!-- Unsharp -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="unsharp"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Unsharp Masking
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- =========================================================
-         EDGE DETECTION
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Edge Detection
-        </div>
-
-
-        {% for op, label in [
-            ("sobel", "Sobel"),
-            ("sobel_x", "Sobel X"),
-            ("sobel_y", "Sobel Y"),
-            ("laplacian", "Laplacian"),
-            ("scharr_x", "Scharr X"),
-            ("scharr_y", "Scharr Y")
-        ] %}
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="{{ op }}"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                {{ label }}
-            </button>
-
-        </form>
-
-        {% endfor %}
-
-
-        <!-- Canny -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="canny"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Lower Threshold
-                </label>
-
-                <input
-                    type="number"
-                    name="lower_threshold"
-                    value="50"
-                    min="0"
-                    max="255"
-                >
-
-            </div>
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Upper Threshold
-                </label>
-
-                <input
-                    type="number"
-                    name="upper_threshold"
-                    value="150"
-                    min="0"
-                    max="255"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Canny
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- =========================================================
-         THRESHOLDING
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Thresholding
-        </div>
-
-
-        <!-- Binary -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="threshold"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Threshold
-                </label>
-
-                <input
-                    type="number"
-                    name="threshold"
-                    value="127"
-                    min="0"
-                    max="255"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Binary Threshold
-            </button>
-
-        </form>
-
-
-        <!-- Otsu -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="otsu"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Otsu Threshold
-            </button>
-
-        </form>
-
-
-        <!-- Adaptive -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="adaptive_threshold"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Block Size
-                </label>
-
-                <input
-                    type="number"
-                    name="block_size"
-                    value="11"
-                    min="3"
-                    max="51"
-                    step="2"
-                >
-
-            </div>
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Constant C
-                </label>
-
-                <input
-                    type="number"
-                    name="c"
-                    value="2"
-                    min="-20"
-                    max="20"
-                    step="1"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Adaptive Threshold
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- =========================================================
-         MORPHOLOGY
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Morphology
-        </div>
-
-
-        {% for op, label in [
-            ("erosion", "Erosion"),
-            ("dilation", "Dilation"),
-            ("opening", "Opening"),
-            ("closing", "Closing"),
-            ("morphological_gradient", "Morphological Gradient"),
-            ("top_hat", "Top Hat"),
-            ("black_hat", "Black Hat")
-        ] %}
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="{{ op }}"
-            >
-
-            <input
-                type="hidden"
-                name="kernel_size"
-                value="5"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                {{ label }}
-            </button>
-
-        </form>
-
-        {% endfor %}
-
-    </div>
-
-
-    <!-- =========================================================
-         FREQUENCY
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Frequency Domain
-        </div>
-
-
-        <!-- FFT -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="fft"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                FFT Spectrum
-            </button>
-
-        </form>
-
-
-        <!-- Inverse FFT -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="inverse_fft"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Inverse FFT
-            </button>
-
-        </form>
-
-
-        <!-- Low Pass -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="low_pass"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Cutoff Frequency
-                </label>
-
-                <input
-                    type="number"
-                    name="cutoff_frequency"
-                    value="30"
-                    min="1"
-                    max="500"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Low-Pass Filter
-            </button>
-
-        </form>
-
-
-        <!-- High Pass -->
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="high_pass"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Cutoff Frequency
-                </label>
-
-                <input
-                    type="number"
-                    name="cutoff_frequency"
-                    value="30"
-                    min="1"
-                    max="500"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                High-Pass Filter
-            </button>
-
-        </form>
-
-    </div>
-
-
-    <!-- =========================================================
-         GEOMETRIC
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Geometric
-        </div>
-
-
-        {% for op, label in [
-            ("rotate_90", "Rotate 90°"),
-            ("rotate_180", "Rotate 180°"),
-            ("rotate_270", "Rotate 270°"),
-            ("flip_horizontal", "Flip Horizontal"),
-            ("flip_vertical", "Flip Vertical")
-        ] %}
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="{{ op }}"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                {{ label }}
-            </button>
-
-        </form>
-
-        {% endfor %}
-
-    </div>
-
-
-    <!-- =========================================================
-         COLOR CHANNELS
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Color Channels
-        </div>
-
-
-        {% for op, label in [
-            ("red_channel", "Red Channel"),
-            ("green_channel", "Green Channel"),
-            ("blue_channel", "Blue Channel")
-        ] %}
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="{{ op }}"
-            >
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                {{ label }}
-            </button>
-
-        </form>
-
-        {% endfor %}
-
-    </div>
-
-
-    <!-- =========================================================
-         RESIZE
-    ========================================================== -->
-
-    <div class="operation-group">
-
-        <div class="group-title">
-            Resize
-        </div>
-
-
-        <form
-            class="operation-form"
-            method="POST"
-            action="/process"
-        >
-
-            <input
-                type="hidden"
-                name="job_id"
-                value="{{ job_id }}"
-            >
-
-            <input
-                type="hidden"
-                name="operation"
-                value="resize"
-            >
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Width
-                </label>
-
-                <input
-                    type="number"
-                    name="width"
-                    placeholder="Width"
-                    min="1"
-                >
-
-            </div>
-
-
-            <div class="parameter-box">
-
-                <label>
-                    Height
-                </label>
-
-                <input
-                    type="number"
-                    name="height"
-                    placeholder="Height"
-                    min="1"
-                >
-
-            </div>
-
-
-            <button
-                type="submit"
-                class="operation-button"
-            >
-                Resize Image
-            </button>
-
-        </form>
-
-    </div>
-
-
-</aside>
-
-
-<!-- =============================================================
-     CENTRAL WORKSPACE
-============================================================= -->
-
-<main class="workspace">
-
-
-    <div class="workspace-header">
-
-        <div class="workspace-title">
-            Image Workspace
-        </div>
-
-        <div class="workspace-status">
-            JOB: {{ job_id }}
-        </div>
-
-    </div>
-
-
-    <!-- Flask flash messages -->
-
-    {% with messages = get_flashed_messages() %}
-
-        {% if messages %}
-
-            {% for message in messages %}
-
-            <div class="message">
-                {{ message }}
-            </div>
-
-            {% endfor %}
-
-        {% endif %}
-
-    {% endwith %}
-
-
-    <!-- Application error -->
-
-    {% if error %}
-
-    <div class="message">
-        {{ error }}
-    </div>
-
-    {% endif %}
-
-
-    <!-- IMAGE -->
-
-    <div class="image-panel">
-
-
-        {% if working_url %}
-
-        <img
-            src="{{ working_url }}"
-            alt="Current processed image"
-            class="working-image"
-        >
-
-        {% else %}
-
-        <div class="empty-image">
-            No processed image available.
-        </div>
-
-        {% endif %}
-
-
-    </div>
-
-
-    <!-- =========================================================
-         PIPELINE HISTORY
-    ========================================================== -->
-
-    <div class="history-panel">
-
-        <div class="panel-heading">
-            Processing Pipeline
-        </div>
-
-
-        <div class="history-list">
-
-
-            {% if history %}
-
-
-                {% for item in history %}
-
-                <div
-                    class="
-                        history-item
-                        {% if loop.last %}
-                            current
-                        {% endif %}
-                    "
-                >
-                    {{ item }}
-                </div>
-
+        <!-- ENHANCE -->
+        <div class="menu">
+            <button type="button">Enhance</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Intensity / Contrast</div>
+
+                {% for op, label in [
+                    ('grayscale', 'Grayscale'),
+                    ('negative', 'Negative'),
+                    ('log', 'Log transform'),
+                    ('histogram_equalization', 'Histogram equalization'),
+                    ('contrast_stretch', 'Contrast stretch'),
+                    ('clahe', 'CLAHE'),
+                    ('auto_enhancement', 'Automatic enhancement')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
                 {% endfor %}
 
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="gamma">
 
-            {% else %}
+                        <label>Gamma</label>
+                        <input type="number" step="0.1" min="0.1" max="5"
+                               name="gamma" value="1.0">
 
-
-                <div class="history-item current">
-                    Original Image
+                        <button type="submit">Apply gamma</button>
+                    </form>
                 </div>
-
-
-            {% endif %}
-
-
+            </div>
         </div>
 
+        <!-- FILTERS -->
+        <div class="menu">
+            <button type="button">Filters</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Spatial filtering</div>
+
+                {% for op, label in [
+                    ('mean', 'Mean filter'),
+                    ('gaussian', 'Gaussian filter'),
+                    ('median', 'Median filter'),
+                    ('bilateral', 'Bilateral filter'),
+                    ('sharpen', 'Sharpen'),
+                    ('unsharp', 'Unsharp masking')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- EDGES -->
+        <div class="menu">
+            <button type="button">Edges</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Gradient / Edge Operators</div>
+
+                {% for op, label in [
+                    ('sobel', 'Sobel magnitude'),
+                    ('sobel_x', 'Sobel X'),
+                    ('sobel_y', 'Sobel Y'),
+                    ('laplacian', 'Laplacian'),
+                    ('scharr_x', 'Scharr X'),
+                    ('scharr_y', 'Scharr Y')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
+                {% endfor %}
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="canny">
+
+                        <label>Lower threshold</label>
+                        <input type="number" name="lower_threshold"
+                               value="50" min="0" max="255">
+
+                        <label>Upper threshold</label>
+                        <input type="number" name="upper_threshold"
+                               value="150" min="0" max="255">
+
+                        <button type="submit">Apply Canny</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- THRESHOLD -->
+        <div class="menu">
+            <button type="button">Threshold</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Segmentation</div>
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="threshold">
+
+                        <label>Threshold</label>
+                        <input type="number" name="threshold"
+                               value="127" min="0" max="255">
+
+                        <button type="submit">Binary threshold</button>
+                    </form>
+                </div>
+
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="otsu">
+                    <button class="op" type="submit">Otsu threshold</button>
+                </form>
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="adaptive_threshold">
+
+                        <label>Block size</label>
+                        <input type="number" name="block_size"
+                               value="11" min="3" step="2">
+
+                        <label>C</label>
+                        <input type="number" name="c" value="2">
+
+                        <button type="submit">Adaptive threshold</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- MORPHOLOGY -->
+        <div class="menu">
+            <button type="button">Morphology</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Shape operations</div>
+
+                {% for op, label in [
+                    ('erosion', 'Erosion'),
+                    ('dilation', 'Dilation'),
+                    ('opening', 'Opening'),
+                    ('closing', 'Closing'),
+                    ('morphological_gradient', 'Morphological gradient'),
+                    ('top_hat', 'Top hat'),
+                    ('black_hat', 'Black hat')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+                    <input type="hidden" name="kernel_size" value="3">
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
+                {% endfor %}
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="erosion">
+
+                        <label>Kernel size</label>
+                        <input type="number" name="kernel_size"
+                               value="3" min="1" step="2">
+
+                        <button type="submit">Apply erosion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- FREQUENCY -->
+        <div class="menu">
+            <button type="button">Frequency</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Frequency domain</div>
+
+                {% for op, label in [
+                    ('fft', 'FFT transform'),
+                    ('inverse_fft', 'Inverse FFT'),
+                    ('low_pass', 'Low-pass filter'),
+                    ('high_pass', 'High-pass filter')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+
+                    {% if op in ['low_pass', 'high_pass'] %}
+                    <input type="hidden" name="cutoff_frequency" value="30">
+                    {% endif %}
+
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
+                {% endfor %}
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="low_pass">
+
+                        <label>Cutoff frequency</label>
+                        <input type="number" name="cutoff_frequency"
+                               value="30" min="1">
+
+                        <button type="submit">Apply low-pass</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- GEOMETRY -->
+        <div class="menu">
+            <button type="button">Geometry</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Geometric operations</div>
+
+                {% for op, label in [
+                    ('rotate_90', 'Rotate 90°'),
+                    ('rotate_180', 'Rotate 180°'),
+                    ('rotate_270', 'Rotate 270°'),
+                    ('flip_horizontal', 'Flip horizontal'),
+                    ('flip_vertical', 'Flip vertical')
+                ] %}
+                <form method="POST" action="{{ url_for('process_image') }}">
+                    <input type="hidden" name="job_id" value="{{ job_id }}">
+                    <input type="hidden" name="operation" value="{{ op }}">
+                    <button class="op" type="submit">{{ label }}</button>
+                </form>
+                {% endfor %}
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="resize">
+
+                        <label>Width</label>
+                        <input type="number" name="width"
+                               placeholder="e.g. 1024" min="1">
+
+                        <label>Height</label>
+                        <input type="number" name="height"
+                               placeholder="Optional" min="1">
+
+                        <button type="submit">Resize image</button>
+                    </form>
+                </div>
+
+                <div class="dropdown-title" style="margin-top:4px">
+                    Image enlargement
+                </div>
+
+                <div class="subform">
+                    <form method="POST" action="{{ url_for('process_image') }}">
+                        <input type="hidden" name="job_id" value="{{ job_id }}">
+                        <input type="hidden" name="operation" value="enlarge_lanczos">
+
+                        <label>Scale factor</label>
+                        <select name="enlarge_scale">
+                            <option value="2">2× Lanczos</option>
+                            <option value="3">3× Lanczos</option>
+                            <option value="4">4× Lanczos</option>
+                        </select>
+
+                        <button type="submit">Enlarge image</button>
+                    </form>
+
+                    <div style="font:9px/1.4 Consolas,monospace;color:#777;margin-top:7px">
+                        Aspect ratio preserved. Interpolation does not guarantee additional image detail.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYZE -->
+        <div class="menu">
+            <button type="button">Analyze</button>
+
+            <div class="dropdown">
+                <div class="dropdown-title">Measurement / visualization</div>
+
+                <a class="op"
+                   target="_blank"
+                   href="{{ url_for('histogram_analysis', job_id=job_id) }}">
+                    Plot histogram
+                </a>
+
+                <a class="op"
+                   target="_blank"
+                   href="{{ url_for('fft_analysis', job_id=job_id) }}">
+                    Plot FFT spectrum
+                </a>
+
+                <a class="op"
+                   href="{{ url_for('compare', job_id=job_id) }}">
+                    Compare algorithms
+                </a>
+            </div>
+        </div>
+
+    </nav>
+
+    <div class="right-actions">
+        <a class="tool-link" href="{{ url_for('batch') }}">Batch</a>
+        <a class="tool-link" href="{{ url_for('video_lab') }}">Video Lab</a>
+        <a class="tool-link" href="{{ url_for('new_image') }}">New</a>
     </div>
+</header>
 
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="flash">{{ messages[-1] }}</div>
+    {% endif %}
+{% endwith %}
 
-</main>
+<div class="workspace">
 
+    <main class="canvas-area">
 
-<!-- =============================================================
-     RIGHT ANALYSIS PANEL
-============================================================= -->
-
-<aside class="analysis-panel">
-
-
-    <!-- =========================================================
-         IMAGE QUALITY
-    ========================================================== -->
-
-    <section class="analysis-section">
-
-
-        <div class="analysis-title">
-            Image Quality
+        <div class="canvas-header">
+            WORKSPACE / CURRENT RESULT / {{ current_step }}
         </div>
 
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                Brightness
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.2f"|format(
-                        metrics.get(
-                            "brightness_processed",
-                            metrics.get(
-                                "brightness",
-                                0
-                            )
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                Contrast
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.2f"|format(
-                        metrics.get(
-                            "contrast_processed",
-                            metrics.get(
-                                "contrast",
-                                0
-                            )
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                Sharpness
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.2f"|format(
-                        metrics.get(
-                            "sharpness_processed",
-                            metrics.get(
-                                "sharpness",
-                                0
-                            )
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                Noise
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.2f"|format(
-                        metrics.get(
-                            "noise_processed",
-                            metrics.get(
-                                "noise",
-                                0
-                            )
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                MSE
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.4f"|format(
-                        metrics.get(
-                            "mse",
-                            0
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                PSNR
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.3f"|format(
-                        metrics.get(
-                            "psnr",
-                            0
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-        <div class="metric-row">
-
-            <span class="metric-name">
-                SSIM
-            </span>
-
-            <span class="metric-value">
-
-                {{
-                    "%.4f"|format(
-                        metrics.get(
-                            "ssim",
-                            0
-                        )
-                    )
-                }}
-
-            </span>
-
-        </div>
-
-
-    </section>
-
-
-    <!-- =========================================================
-         AUTOMATIC ANALYSIS
-    ========================================================== -->
-
-    <section class="analysis-section">
-
-
-        <div class="analysis-title">
-            Automatic Analysis
-        </div>
-
-
-        <div class="analysis-row">
-
-            <span class="analysis-name">
-                Low Light
-            </span>
-
-
-            {% if analysis.get(
-                "is_low_light",
-                False
-            ) %}
-
-            <span class="status detected">
-                Detected
-            </span>
-
-            {% else %}
-
-            <span class="status">
-                Normal
-            </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <div class="analysis-row">
-
-            <span class="analysis-name">
-                Low Contrast
-            </span>
-
-
-            {% if analysis.get(
-                "is_low_contrast",
-                False
-            ) %}
-
-            <span class="status detected">
-                Detected
-            </span>
-
-            {% else %}
-
-            <span class="status">
-                Normal
-            </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <div class="analysis-row">
-
-            <span class="analysis-name">
-                Blur
-            </span>
-
-
-            {% if analysis.get(
-                "is_blurry",
-                False
-            ) %}
-
-            <span class="status detected">
-                Detected
-            </span>
-
-            {% else %}
-
-            <span class="status">
-                Normal
-            </span>
-
-            {% endif %}
-
-        </div>
-
-
-        <div class="analysis-row">
-
-            <span class="analysis-name">
-                Noise
-            </span>
-
-
-            {% if analysis.get(
-                "is_noisy",
-                False
-            ) %}
-
-            <span class="status detected">
-                Detected
-            </span>
-
-            {% else %}
-
-            <span class="status">
-                Normal
-            </span>
-
-            {% endif %}
-
-        </div>
-
-
-    </section>
-
-
-    <!-- =========================================================
-         ORIGINAL VS CURRENT
-    ========================================================== -->
-
-    <section class="analysis-section">
-
-
-        <div class="analysis-title">
-            Original / Current
-        </div>
-
-
-        <div class="comparison-grid">
-
-
-            <div>
-
-                {% if original_url %}
-
+        <div class="image-stage">
+            {% if working_url %}
                 <img
-                    src="{{ original_url }}"
-                    alt="Original image"
-                    class="comparison-image"
-                >
-
-                {% else %}
-
-                <div class="comparison-image"></div>
-
-                {% endif %}
-
-
-                <div class="comparison-label">
-                    Original
-                </div>
-
-            </div>
-
-
-            <div>
-
-                {% if working_url %}
-
-                <img
+                    class="working-image"
                     src="{{ working_url }}"
-                    alt="Current image"
-                    class="comparison-image"
+                    alt="Current processing result"
                 >
+            {% else %}
+                <div class="empty">No image loaded.</div>
+            {% endif %}
+        </div>
 
-                {% else %}
+        <div class="bottom-strip">
+            <div class="history">
+                <div class="history-title">Processing pipeline</div>
 
-                <div class="comparison-image"></div>
+                <div class="history-list">
+                    <span class="chip">0 · Original</span>
 
-                {% endif %}
-
-
-                <div class="comparison-label">
-                    Current
+                    {% for item in history %}
+                        <span class="chip {% if loop.last %}current{% endif %}">
+                            {{ loop.index }} · {{ item }}
+                        </span>
+                    {% endfor %}
                 </div>
+            </div>
+        </div>
+
+        <!-- Original image preview in the bottom-right corner -->
+        <div class="original-preview">
+            <div class="original-preview-title">ORIGINAL IMAGE</div>
+            <img
+                src="{{ original_url }}"
+                alt="Original uploaded image"
+            >
+        </div>
+
+    </main>
+
+    <aside class="side">
+
+        <section class="panel">
+            <h3>Image quality</h3>
+
+            {% for key, label in [
+                ('brightness_processed', 'Brightness'),
+                ('contrast_processed', 'Contrast'),
+                ('sharpness_processed', 'Sharpness'),
+                ('noise_processed', 'Noise'),
+                ('psnr', 'PSNR'),
+                ('ssim', 'SSIM')
+            ] %}
+                <div class="metric">
+                    <span>{{ label }}</span>
+
+                    <span>
+                        {% if metrics.get(key) is not none %}
+                            {{ '%.3f'|format(metrics.get(key, 0)) }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        </section>
+
+        <section class="panel">
+            <h3>Session</h3>
+
+            <div class="session-actions">
+
+                <form
+                    method="POST"
+                    action="{{ url_for('undo', job_id=job_id) }}"
+                >
+                    <button class="side-button" type="submit">
+                        Undo last operation
+                    </button>
+                </form>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('reset', job_id=job_id) }}"
+                >
+                    <button class="side-button" type="submit">
+                        Reset pipeline
+                    </button>
+                </form>
+
+                <a
+                    class="side-link"
+                    href="{{ url_for('download', job_id=job_id) }}"
+                >
+                    Export result
+                </a>
+
+                <a
+                    class="side-link"
+                    href="{{ url_for('compare', job_id=job_id) }}"
+                >
+                    Comparison workbench
+                </a>
 
             </div>
+        </section>
 
+        <section class="panel">
+            <h3>System</h3>
 
-        </div>
+            <div class="notice">
+                COLLAB local image-processing workstation.
+                <br><br>
+                Operations are applied to the current working image.
+                Reset restores the original source.
+            </div>
+        </section>
 
-
-    </section>
-
-
-    <!-- =========================================================
-         ANALYSIS TOOLS
-    ========================================================== -->
-
-    <section class="analysis-section">
-
-
-        <div class="analysis-title">
-            Analysis Tools
-        </div>
-
-
-        <div class="quick-grid">
-
-
-            <a
-                href="/analysis/histogram/{{ job_id }}"
-                target="_blank"
-                class="quick-link"
-            >
-                Histogram
-            </a>
-
-
-            <a
-                href="/analysis/fft/{{ job_id }}"
-                target="_blank"
-                class="quick-link"
-            >
-                FFT
-            </a>
-
-
-            <a
-                href="/compare/{{ job_id }}"
-                class="quick-link"
-            >
-                Compare
-            </a>
-
-
-            <a
-                href="/batch"
-                class="quick-link"
-            >
-                Batch
-            </a>
-
-
-        </div>
-
-
-    </section>
-
-
-    <!-- =========================================================
-         SESSION ACTIONS
-    ========================================================== -->
-
-    <section class="analysis-section">
-
-
-        <div class="analysis-title">
-            Session
-        </div>
-
-
-        <div class="action-stack">
-
-
-            <!-- UNDO -->
-
-            <form
-                method="POST"
-                action="/undo/{{ job_id }}"
-            >
-
-                <button
-                    type="submit"
-                    class="action-button"
-                >
-                    Undo Last Operation
-                </button>
-
-            </form>
-
-
-            <!-- RESET -->
-
-            <form
-                method="POST"
-                action="/reset/{{ job_id }}"
-            >
-
-                <button
-                    type="submit"
-                    class="action-button"
-                >
-                    Reset Pipeline
-                </button>
-
-            </form>
-
-
-            <!-- DOWNLOAD -->
-
-            <a
-                href="/download/{{ job_id }}"
-                class="action-button primary"
-            >
-                Export Result
-            </a>
-
-
-            <!-- NEW -->
-
-            <a
-                href="/new"
-                class="action-button"
-            >
-                New Processing Session
-            </a>
-
-
-        </div>
-
-
-    </section>
-
-
-</aside>
-
+    </aside>
 
 </div>
 
-
 </body>
-
 </html>

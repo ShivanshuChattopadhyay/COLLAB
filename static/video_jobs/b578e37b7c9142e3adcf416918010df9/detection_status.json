@@ -1,0 +1,24 @@
+{
+  "state": "completed",
+  "message": "YOLO detection completed.",
+  "error": null,
+  "output_url": "/video/detect/file/b578e37b7c9142e3adcf416918010df9",
+  "csv_url": "/video/detect/csv/b578e37b7c9142e3adcf416918010df9",
+  "summary": {
+    "frames_processed": 1387,
+    "detections_total": 752,
+    "class_counts": {
+      "dog": 752
+    },
+    "fps": 30.005,
+    "width": 1080,
+    "height": 1920,
+    "output_size_bytes": 66524725,
+    "elapsed_seconds": 232.97,
+    "model": "yolo26n.pt",
+    "confidence": 0.25,
+    "image_size": 640
+  },
+  "updated_at": "2026-10-12T10:07:43+0530",
+  "download_url": "/video/detect/download/b578e37b7c9142e3adcf416918010df9"
+}
