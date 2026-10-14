@@ -14,7 +14,7 @@
 <body>
 <header class="top"><a class="brand" href="/">COLLAB</a><span class="tag">VIDEO PROCESSING WORKBENCH</span><a class="toplink" href="/">← Image Lab / Home</a></header>
 <main class="wrap">
-  <div class="intro"><div><h1>Video Lab</h1><p>Frame processing, synchronized comparison, histograms, YOLO object detection, and OCR text extraction.</p></div><div id="statusBadge" class="status">STATUS · Select a video to begin</div></div>
+  <div class="intro"><div><h1>Video Lab</h1><p>Frame processing, synchronized comparison, histograms, YOLO detection, OCR, and motion estimation/compensation.</p></div><div id="statusBadge" class="status">STATUS · Select a video to begin</div></div>
   <section class="panel">
     <h2>01 / Source video</h2>
     <form id="uploadForm"><div class="uploadrow"><input id="videoFile" type="file" name="video" accept="video/*,.mp4,.avi,.mov,.mkv,.webm,.m4v" required><button class="btn primary" type="submit">Load video</button></div></form>
@@ -47,6 +47,17 @@
       <div class="video-card"><div class="video-head"><span>OCR-annotated video</span><small id="ocrVideoMeta">Not analysed</small></div><video id="ocrVideo" controls playsinline preload="metadata" class="hide"></video><div id="ocrEmpty" class="video-empty">Load a source video, then run OCR from the controls.</div></div>
       <div id="ocrSummary" class="message">OCR results will appear here.</div>
       <div class="transport"><a id="ocrDownloadVideo" class="btn hide" href="#">Download OCR MP4</a><a id="ocrDownloadCsv" class="btn hide" href="#">Download OCR CSV</a><a id="ocrDownloadTxt" class="btn hide" href="#">Download extracted text</a></div>
+    </section>
+    <section class="panel"><h2>06 / Motion estimation &amp; compensation output</h2>
+      <p class="section-note">Four-panel result: current frame, motion-compensated prediction, amplified absolute prediction residual, and displacement vectors. Download the CSV files to inspect vectors and error measurements.</p>
+      <div class="video-card"><div class="video-head"><span>Motion analysis</span><small id="motionVideoMeta">Not analysed</small></div>
+        <video id="motionVideo" controls playsinline preload="metadata" class="hide"></video>
+        <div id="motionEmpty" class="video-empty">Load a source video, then run motion analysis from the controls.</div>
+      </div>
+      <div id="motionSummary" class="message">Motion-estimation results will appear here.</div>
+      <div class="transport"><a id="motionDownloadVideo" class="btn hide" href="#">Download motion-analysis MP4</a>
+        <a id="motionDownloadVectors" class="btn hide" href="#">Download displacement vectors CSV</a>
+        <a id="motionDownloadMetrics" class="btn hide" href="#">Download prediction-error CSV</a></div>
     </section>
   </div>
   <aside class="side-column">
@@ -101,21 +112,44 @@
       <div id="ocrMessage" class="message" role="status">Load a source video before OCR.</div>
       <p class="hint">Hindi OCR requires Hindi language data to be installed with Tesseract. Test English first if Hindi OCR fails.</p>
     </section>
-    <section class="panel"><h2>07 / Session notes</h2><div class="hint">YOLO detects classes learned by the selected pretrained model. For objects outside those classes, the next stage is training or loading custom model weights. OCR can then be added for text extraction from selected frames or detected regions.</div></section>
+    <section class="panel"><h2>07 / Motion estimation &amp; compensation</h2>
+      <p class="section-note">Runs only when you request it, so this feature does not slow ordinary filtering. Longer and higher-resolution videos take longer to analyse.</p>
+      <form id="motionForm">
+        <div class="controls">
+          <div class="field wide"><label for="motion_algorithm">Motion-estimation technique</label>
+            <select id="motion_algorithm" name="algorithm">
+              <option value="block" selected>Local block matching — per-block vectors</option>
+              <option value="global">Global translation — fastest for camera shift</option>
+            </select>
+          </div>
+          <div class="field wide"><label for="motion_preset">Speed / accuracy preset</label>
+            <select id="motion_preset" name="preset">
+              <option value="fast" selected>Fast — recommended to start</option>
+              <option value="balanced">Balanced — wider local search</option>
+              <option value="accurate">Accurate — higher-resolution estimation, slower</option>
+            </select>
+          </div>
+        </div>
+        <button id="motionButton" class="btn primary" style="width:100%;margin-top:14px" type="submit" disabled>Run motion estimation</button>
+      </form>
+      <div id="motionMessage" class="message" role="status">Load a source video before motion analysis.</div>
+      <p class="hint">Block mode records a displacement vector (dx, dy) per block using a squared-difference matching cost. Global mode estimates one translation per frame pair. A high residual means the prediction did not explain the frame well. This is a motion-analysis/prediction feature, not a replacement video codec.</p>
+    </section>
+    <section class="panel"><h2>08 / Session notes</h2><div class="hint">YOLO detects classes learned by the selected pretrained model. For objects outside those classes, the next stage is training or loading custom model weights. OCR can then be added for text extraction from selected frames or detected regions.</div></section>
   </aside></div>
   <div class="footer">COLLAB VIDEO LAB · LOCAL PROCESSING · ORIGINAL SOURCE IS PRESERVED</div>
 </main>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const uploadForm = $('uploadForm'), processForm = $('processForm'), detectForm = $('detectForm'), ocrForm = $('ocrForm');
-  const original = $('originalVideo'), processed = $('processedVideo'), detection = $('detectionVideo'), ocrVideo = $('ocrVideo');
+  const uploadForm = $('uploadForm'), processForm = $('processForm'), detectForm = $('detectForm'), ocrForm = $('ocrForm'), motionForm = $('motionForm');
+  const original = $('originalVideo'), processed = $('processedVideo'), detection = $('detectionVideo'), ocrVideo = $('ocrVideo'), motionVideo = $('motionVideo');
   let jobId = null, inputUrl = null, outputUrl = null, busy = false, histTimer = null, lastHistAt = 0;
   const formatTime = value => { if (!Number.isFinite(value) || value < 0) value = 0; const m = Math.floor(value / 60), s = value % 60; return `${String(m).padStart(2,'0')}:${s.toFixed(1).padStart(4,'0')}`; };
   function status(text, type='') { $('statusBadge').textContent = 'STATUS · ' + text; $('processMessage').className = 'message ' + type; }
   function message(id, text, type='') { $(id).textContent = text || ''; $(id).className = 'message ' + type; }
   function setVideoVisible(video, empty, visible) { video.classList.toggle('hide', !visible); $(empty).classList.toggle('hide', visible); }
-  function enableAfterUpload(enabled) { $('processButton').disabled = !enabled || busy; $('detectButton').disabled = !enabled || busy; $('ocrButton').disabled = !enabled || busy; $('playBoth').disabled = !enabled; $('pauseBoth').disabled = !enabled; $('syncBoth').disabled = !enabled; $('timeline').disabled = !enabled; $('refreshHist').disabled = !enabled; }
+  function enableAfterUpload(enabled) { $('processButton').disabled = !enabled || busy; $('detectButton').disabled = !enabled || busy; $('ocrButton').disabled = !enabled || busy; $('motionButton').disabled = !enabled || busy; $('playBoth').disabled = !enabled; $('pauseBoth').disabled = !enabled; $('syncBoth').disabled = !enabled; $('timeline').disabled = !enabled; $('refreshHist').disabled = !enabled; }
   function setCompareMode() { const mode = $('compareMode').value; const cards = document.querySelectorAll('.video-card'); cards[0].classList.toggle('hide', mode === 'processed'); cards[1].classList.toggle('hide', mode === 'original'); }
   function syncByProgress(sourceVideo, targetVideo) { if (!Number.isFinite(sourceVideo.duration) || !Number.isFinite(targetVideo.duration) || sourceVideo.duration <= 0) return; const progress = sourceVideo.currentTime / sourceVideo.duration; const target = progress * targetVideo.duration; if (Math.abs(targetVideo.currentTime-target) > .25) targetVideo.currentTime = Math.min(target, Math.max(0,targetVideo.duration-.02)); }
   function syncFrom(sourceVideo, targetVideo) { syncByProgress(sourceVideo, targetVideo); }
@@ -266,6 +300,56 @@
     }
   });
 
+  // Motion estimation is an opt-in analysis path, separate from ordinary filtering.
+  motionForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!jobId || busy) return;
+    busy = true;
+    enableAfterUpload(Boolean(jobId));
+    $('motionDownloadVideo').classList.add('hide');
+    $('motionDownloadVectors').classList.add('hide');
+    $('motionDownloadMetrics').classList.add('hide');
+    $('motionSummary').textContent = 'Estimating motion and preparing the prediction/residual video. Keep this tab open until it finishes.';
+    message('motionMessage', 'Starting motion analysis…');
+    status('Motion analysis running');
+    try {
+      const response = await fetch(`/video/motion/${encodeURIComponent(jobId)}`, {
+        method: 'POST', body: new FormData(motionForm)
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error || 'Motion analysis failed.');
+
+      motionVideo.src = result.video_url + (result.video_url.includes('?') ? '&' : '?') + 'v=' + Date.now();
+      motionVideo.load();
+      setVideoVisible(motionVideo, 'motionEmpty', true);
+      $('motionDownloadVideo').href = result.download_url;
+      $('motionDownloadVideo').classList.remove('hide');
+      $('motionDownloadVectors').href = result.vectors_url;
+      $('motionDownloadVectors').classList.remove('hide');
+      $('motionDownloadMetrics').href = result.metrics_url;
+      $('motionDownloadMetrics').classList.remove('hide');
+
+      const summary = result.summary || {};
+      $('motionVideoMeta').textContent = `${summary.frames_processed ?? '—'} frames · ${summary.algorithm_key || '—'} · ${summary.elapsed_seconds ?? '—'} s`;
+      $('motionSummary').textContent =
+        `Method: ${summary.algorithm || '—'} | Preset: ${summary.preset || '—'}\n` +
+        `Frames: ${summary.frames_processed ?? '—'} | Vector records: ${summary.vector_rows ?? '—'} | Runtime: ${summary.elapsed_seconds ?? '—'} s\n` +
+        `Baseline previous-frame MAE: ${summary.mean_naive_previous_frame_mae ?? '—'}\n` +
+        `Compensated-prediction MAE: ${summary.mean_compensated_prediction_mae ?? '—'}\n` +
+        `Mean error improvement: ${summary.mean_error_improvement_percent ?? '—'}%\n` +
+        `Positive improvement means lower average prediction error; negative means this setting performed worse than the previous-frame baseline on this video.`;
+      message('motionMessage', 'Motion analysis completed. The MP4 and both CSV reports are ready.', 'good');
+      status('Motion analysis complete');
+    } catch (error) {
+      message('motionMessage', error.message, 'error');
+      $('motionSummary').textContent = 'No completed motion-analysis output is available.';
+      status('Motion analysis failed', 'error');
+    } finally {
+      busy = false;
+      enableAfterUpload(Boolean(jobId));
+    }
+  });
+
   // Native canvas bar charts: no third-party chart CDN is required.
   const histogramCanvases = {original:$('histOriginal'),processed:$('histProcessed')};
   function readHistogram(video) {
@@ -295,13 +379,15 @@
   $('histMode').addEventListener('change',drawHistograms); $('overlayHist').addEventListener('change',drawHistograms); $('refreshHist').addEventListener('click',drawHistograms);
   original.addEventListener('loadeddata',()=>{setVideoVisible(original,'originalEmpty',true);drawHistograms();}); processed.addEventListener('loadeddata',()=>{setVideoVisible(processed,'processedEmpty',true);drawHistograms();});
   // Initial empty states: the video element remains hidden until a valid source exists.
-  setVideoVisible(original,'originalEmpty',false); setVideoVisible(processed,'processedEmpty',false); setVideoVisible(ocrVideo,'ocrEmpty',false); setCompareMode();
+  setVideoVisible(original,'originalEmpty',false); setVideoVisible(processed,'processedEmpty',false); setVideoVisible(ocrVideo,'ocrEmpty',false); setVideoVisible(motionVideo,'motionEmpty',false); setCompareMode();
   // Make failed browser video decoding visible instead of leaving a blank panel.
   original.addEventListener('error',()=>message('uploadMessage','Browser could not decode the source video for preview. Try MP4/H.264.','error'));
   processed.addEventListener('error',()=>message('processMessage','Output was generated, but this browser could not decode it. Try opening the downloaded MP4 in a media player.','error'));
   detection.addEventListener('error',()=>message('detectMessage','Detection output exists, but the browser could not decode it. Re-run detection after checking the H.264 encoder installation.','error'));
   ocrVideo.addEventListener('loadeddata', () => setVideoVisible(ocrVideo, 'ocrEmpty', true));
+  motionVideo.addEventListener('loadeddata', () => setVideoVisible(motionVideo, 'motionEmpty', true));
   ocrVideo.addEventListener('error',()=>message('ocrMessage','OCR output exists, but the browser could not decode it. Check H.264 support and retry.','error'));
+  motionVideo.addEventListener('error',()=>message('motionMessage','Motion-analysis output exists, but the browser could not decode it. Check H.264 support and retry.','error'));
 })();
 </script>
 </body>

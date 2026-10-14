@@ -111,10 +111,11 @@ def temporal_correlation_cancel(
     previous_frame: np.ndarray | None,
     current_weight: float = 0.5,
 ) -> np.ndarray:
-    """Align and blend an adjacent frame to reduce temporal noise.
+    """Motion-align adjacent frames with half-resolution flow for lower cost.
 
-    The blend is skipped when dimensions differ or a large scene change is
-    detected, reducing ghosting at cuts.
+    Flow is estimated on a smaller grayscale pair, then vector magnitudes are
+    scaled back to full-frame pixels before the previous frame is remapped.
+    This retains full-resolution output while lowering the optical-flow workload.
     """
     if current_frame is None:
         return current_frame
@@ -123,15 +124,27 @@ def temporal_correlation_cancel(
 
     current_gray = _to_gray(current_frame)
     previous_gray = _to_gray(previous_frame)
-    difference = float(np.mean(cv2.absdiff(current_gray, previous_gray)))
+    height, width = current_gray.shape[:2]
+    # COLLAB_FAST_FLOW_TEMPORAL: estimate optical flow on half-resolution frames.
+    flow_width = max(32, int(round(width * 0.5)))
+    flow_height = max(32, int(round(height * 0.5)))
+    flow_width = min(width, flow_width)
+    flow_height = min(height, flow_height)
+    current_small = cv2.resize(current_gray, (flow_width, flow_height), interpolation=cv2.INTER_AREA)
+    previous_small = cv2.resize(previous_gray, (flow_width, flow_height), interpolation=cv2.INTER_AREA)
+
+    difference = float(np.mean(cv2.absdiff(current_small, previous_small)))
     if difference > 45.0:
         return current_frame.copy()
 
-    flow = cv2.calcOpticalFlowFarneback(
-        current_gray, previous_gray, None,
+    flow_small = cv2.calcOpticalFlowFarneback(
+        current_small, previous_small, None,
         0.5, 3, 15, 3, 5, 1.2, 0,
     )
-    height, width = current_gray.shape
+    flow = cv2.resize(flow_small, (width, height), interpolation=cv2.INTER_LINEAR)
+    flow[:, :, 0] *= width / float(flow_width)
+    flow[:, :, 1] *= height / float(flow_height)
+
     grid_x, grid_y = np.meshgrid(
         np.arange(width, dtype=np.float32),
         np.arange(height, dtype=np.float32),
@@ -143,14 +156,10 @@ def temporal_correlation_cancel(
         interpolation=cv2.INTER_LINEAR,
         borderMode=cv2.BORDER_REFLECT,
     )
-
     current_weight = float(np.clip(current_weight, 0.0, 1.0))
     return cv2.addWeighted(
-        current_frame, current_weight,
-        aligned_previous, 1.0 - current_weight,
-        0,
+        current_frame, current_weight, aligned_previous, 1.0 - current_weight, 0
     )
-
 
 def process_video(
     input_path: str | Path,

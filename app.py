@@ -4459,6 +4459,172 @@ def video_ocr_text(job_id):
     )
 
 
+# ============================================================
+# MOTION ESTIMATION, COMPENSATION AND PREDICTION-RESIDUAL ANALYSIS
+# Kept separate from ordinary processing so block matching is opt-in.
+# ============================================================
+
+def write_motion_status(job_folder, **updates):
+    """Persist motion-analysis state independently from regular processing."""
+    path = job_folder / "motion_status.json"
+    with _VIDEO_STATUS_LOCK:
+        status_data = {}
+        if path.exists():
+            try:
+                status_data = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                status_data = {}
+        status_data.update(updates)
+        status_data["updated_at"] = time.strftime(
+            "%Y-%m-%dT%H:%M:%S%z", time.localtime()
+        )
+        temporary = path.with_suffix(".json.tmp")
+        try:
+            temporary.write_text(json.dumps(status_data, indent=2), encoding="utf-8")
+            os.replace(temporary, path)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+
+def read_motion_status(job_folder):
+    path = job_folder / "motion_status.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+@app.route("/video/motion/<job_id>", methods=["POST"])
+def video_motion_analysis(job_id):
+    """Create motion vectors, a compensated prediction and residual diagnostics."""
+    try:
+        job_id = safe_job_id(job_id)
+        job_folder = get_video_job_folder(job_id)
+    except ValueError:
+        return jsonify({"ok": False, "error": "Invalid video job."}), 400
+
+    input_files = sorted(job_folder.glob("input.*"))
+    if not input_files:
+        return jsonify({"ok": False, "error": "Source video was not found. Upload it again."}), 404
+
+    algorithm = request.form.get("algorithm", "block").strip().lower()
+    preset = request.form.get("preset", "fast").strip().lower()
+    if algorithm not in {"block", "global"}:
+        return jsonify({"ok": False, "error": "Choose block matching or global translation."}), 400
+    if preset not in {"fast", "balanced", "accurate"}:
+        return jsonify({"ok": False, "error": "Choose the fast, balanced, or accurate preset."}), 400
+
+    if not reserve_video_job(job_id):
+        return jsonify({
+            "ok": False,
+            "error": "This video is already being processed. Wait for that operation to finish.",
+        }), 409
+
+    output_path = job_folder / "motion_analysis.mp4"
+    vectors_path = job_folder / "motion_vectors.csv"
+    metrics_path = job_folder / "motion_metrics.csv"
+    for path in (output_path, vectors_path, metrics_path):
+        path.unlink(missing_ok=True)
+
+    try:
+        write_motion_status(
+            job_folder, state="processing", algorithm=algorithm, preset=preset,
+            message="Estimating motion and building prediction-residual diagnostics.",
+            error=None, summary=None,
+        )
+        # Import lazily so COLLAB's ordinary image/video tools remain usable if
+        # motion analysis is not requested or its optional runtime dependency fails.
+        from app.core.video_motion import analyze_motion_video
+        result = analyze_motion_video(
+            input_path=input_files[0],
+            output_path=output_path,
+            vectors_csv_path=vectors_path,
+            metrics_csv_path=metrics_path,
+            algorithm=algorithm,
+            preset=preset,
+        )
+        video_url = url_for("video_motion_file", job_id=job_id)
+        download_url = url_for("video_motion_download", job_id=job_id)
+        vectors_url = url_for("video_motion_vectors", job_id=job_id)
+        metrics_url = url_for("video_motion_metrics", job_id=job_id)
+        write_motion_status(
+            job_folder, state="completed", message="Motion analysis completed.",
+            error=None, summary=result, output_url=video_url,
+            download_url=download_url, vectors_url=vectors_url, metrics_url=metrics_url,
+        )
+        return jsonify({
+            "ok": True, "message": "Motion analysis completed.",
+            "video_url": video_url, "download_url": download_url,
+            "vectors_url": vectors_url, "metrics_url": metrics_url,
+            "summary": result,
+        })
+    except Exception as error:
+        app.logger.exception("Motion analysis failed for %s", job_id)
+        write_motion_status(
+            job_folder, state="failed", message="Motion analysis failed.", error=str(error)
+        )
+        return jsonify({"ok": False, "error": str(error)}), 500
+    finally:
+        release_video_job(job_id)
+
+
+@app.route("/video/motion/file/<job_id>")
+def video_motion_file(job_id):
+    try:
+        job_folder = get_video_job_folder(job_id)
+    except ValueError:
+        return "Invalid video job.", 400
+    output_path = job_folder / "motion_analysis.mp4"
+    if read_motion_status(job_folder).get("state") != "completed" or not output_path.is_file():
+        return "Motion analysis output is not ready yet.", 404
+    return send_file(output_path, mimetype="video/mp4", conditional=True)
+
+
+@app.route("/video/motion/download/<job_id>")
+def video_motion_download(job_id):
+    try:
+        job_folder = get_video_job_folder(job_id)
+    except ValueError:
+        return "Invalid video job.", 400
+    output_path = job_folder / "motion_analysis.mp4"
+    if read_motion_status(job_folder).get("state") != "completed" or not output_path.is_file():
+        return "Motion analysis output is not ready yet.", 404
+    return send_file(
+        output_path, as_attachment=True, download_name="collab_motion_analysis.mp4",
+        mimetype="video/mp4", conditional=True,
+    )
+
+
+@app.route("/video/motion/vectors/<job_id>")
+def video_motion_vectors(job_id):
+    try:
+        job_folder = get_video_job_folder(job_id)
+    except ValueError:
+        return "Invalid video job.", 400
+    csv_path = job_folder / "motion_vectors.csv"
+    if read_motion_status(job_folder).get("state") != "completed" or not csv_path.is_file():
+        return "Motion vectors are not ready yet.", 404
+    return send_file(
+        csv_path, as_attachment=True, download_name="collab_motion_vectors.csv",
+        mimetype="text/csv; charset=utf-8", conditional=True,
+    )
+
+
+@app.route("/video/motion/metrics/<job_id>")
+def video_motion_metrics(job_id):
+    try:
+        job_folder = get_video_job_folder(job_id)
+    except ValueError:
+        return "Invalid video job.", 400
+    csv_path = job_folder / "motion_metrics.csv"
+    if read_motion_status(job_folder).get("state") != "completed" or not csv_path.is_file():
+        return "Motion metrics are not ready yet.", 404
+    return send_file(
+        csv_path, as_attachment=True, download_name="collab_motion_metrics.csv",
+        mimetype="text/csv; charset=utf-8", conditional=True,
+    )
+
+
 # APPLICATION START
 
 # ============================================================
